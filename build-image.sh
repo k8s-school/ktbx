@@ -9,7 +9,7 @@ set -e
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-IMAGE="k8sschool/kubectl:latest"
+IMAGE="k8sschool/k8s-toolbox:latest"
 
 echo $DIR
 
