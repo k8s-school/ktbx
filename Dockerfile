@@ -79,8 +79,5 @@ RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubect
 
 COPY rootfs /
 
-# Expose kubernetes dashboard
-EXPOSE 8001
-
 ARG FORCE_GO_REBUILD=false
 RUN $GOROOT/bin/go get -v github.com/k8s-school/clouder
