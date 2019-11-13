@@ -24,6 +24,7 @@ The ultimate Kubernetes client toolbox, embedded inside a customized container.
 - Ubuntu LTS is recommended
 - Internet access
 - `sudo` access
+- And up and running Kubernetes cluster, and related KUBECONFIG file
 - Install dependencies below:
 ```shell
 sudo apt-get install curl docker.io
