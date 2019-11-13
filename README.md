@@ -5,7 +5,7 @@ The ultimate Kubernetes client toolbox, embedded inside a customized container.
 
 ## What's embedded in that toolbox?
 
-This toolbox offers a convenient set of popular Kubernetes client tools. It's
+This toolbox offers a convenient set of popular Kubernetes client tools. Its
 goal is to ease sysadmin, devops and developers life.
 
 - [cfssl](https://github.com/cloudflare/cfssl): PKI and TLS toolkit https://cfssl.org/
