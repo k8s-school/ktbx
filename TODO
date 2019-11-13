@@ -1,4 +1,6 @@
-# TODO
-# create homefs/ locally if not exist
-# - add .bashrc
-# - add gcp support
+TODO
+create homefs/ locally if not exist
+- add .bashrc
+- add gcp support
+
+Tutorial for gcp, k8s up and running examples, kustomize, ...
