@@ -3,7 +3,10 @@
 # ⎈ k8s-toolbox
 The ultimate Kubernetes client toolbox, embedded inside a customized container.
 
-## What's in that toolbox?
+## What's embedded in that toolbox?
+
+This toolbox offers a convenient set of popular Kubernetes client tools. It's
+goal is to ease sysadmin, devops and developers life.
 
 - [cfssl](https://github.com/cloudflare/cfssl): PKI and TLS toolkit https://cfssl.org/
 - [clouder](https://github.com/k8s-school/clouder): One-liner to create Google Cloud GKE or GCE cluster
@@ -15,7 +18,6 @@ The ultimate Kubernetes client toolbox, embedded inside a customized container.
 - [kubeval](https://github.com/instrumenta/kubeval): Validation of kubernetes YAML configurations
 - [kustomize](https://github.com/kubernetes-sigs/kustomize): Customization of kubernetes YAML configurations
 - [stern](https://github.com/wercker/stern): Multi pod and container log tailing for Kubernetes
-
 
 ## Installation
 
@@ -46,4 +48,8 @@ curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox
 ./toolbox.sh
 ```
 
+## How-to
+
+- On the host machine, launch and editor and add Kubernetes applications code and scripts to `homefs` directory.
+- Inside the container, run your code and scripts.
 
