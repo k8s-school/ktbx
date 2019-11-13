@@ -50,6 +50,6 @@ curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox
 
 ## How-to
 
-- On the host machine, launch and editor and add Kubernetes applications code and scripts to `homefs` directory.
-- Inside the container, run your code and scripts.
+- On the host machine, launch an editor or IDE and add Kubernetes applications code and scripts to `homefs` directory.
+- Inside the `k8s-toolbox` container, directly run code and scripts.
 
