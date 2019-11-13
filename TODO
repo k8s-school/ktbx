@@ -1,0 +1,4 @@
+# TODO
+# create homefs/ locally if not exist
+# - add .bashrc
+# - add gcp support

@@ -40,11 +40,17 @@ RUN wget -O /usr/local/bin/kubectl \
     chmod +x /usr/local/bin/kubectl
 
 # Install kubeval
-ENV KUBEVAL_VERSION 0.9.0
+ENV KUBEVAL_VERSION 0.14.0
 RUN wget https://github.com/garethr/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz && \
     tar xf kubeval-linux-amd64.tar.gz && \
     mv kubeval /usr/local/bin && \
     rm kubeval-linux-amd64.tar.gz
+
+
+ENV STERN_VERSION 1.11.0
+RUN wget -O /usr/local/bin/stern \
+    https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64 && \
+    chmod +x /usr/local/bin/stern
 
 RUN wget -q --show-progress --https-only --timestamping \
     https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
