@@ -3,6 +3,18 @@
 # k8s-toolbox
 The ultimate Kubernetes client toolbox, embedded inside a customized container.
 
+## What's in that toolbox?
+
+- cfssl
+- kubectl, aliases and autocompletion
+- helm, and autocompletion
+- [kubeval](https://github.com/instrumenta/kubeval): Validator for Kubernetes yaml files
+- gcloud
+- kustomize
+- go-lang
+- [stern](https://github.com/wercker/stern): ⎈ Multi pod and container log tailing for Kubernetes
+
+
 ## Installation
 
 ### Pre-requisites
