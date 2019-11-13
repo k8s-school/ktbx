@@ -5,9 +5,9 @@ The ultimate Kubernetes client toolbox, embedded inside a customized container.
 
 ## What's in that toolbox?
 
-- cfssl
+- [cfssl](https://github.com/cloudflare/cfssl): PKI and TLS toolkit https://cfssl.org/
 - [clouder](https://github.com/k8s-school/clouder): One-liner to create Google Cloud GKE or GCE cluster
-- go-lang
+- [go-lang](https://golang.org): The go programming langage tools
 - [gcloud](https://cloud.google.com/sdk/gcloud): Google Cloud command-line tool
 - [helm](https://helm.sh/), and autocompletion: Helm is the package manager for Kubernetes
 - **[kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)** and autocompletion: kubectl controls the Kubernetes cluster manager.
