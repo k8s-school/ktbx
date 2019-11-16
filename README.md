@@ -53,3 +53,37 @@ curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox
 - On the host machine, launch an editor or IDE and add Kubernetes applications code and scripts to `homefs` directory.
 - Inside the `k8s-toolbox` container, directly run code and scripts.
 
+## Google Cloud setup
+
+### Pre-requisites
+
+gmail account for regular users must have IAM roles below:
+```
+Compute OS Admin Login
+Compute OS Login
+Kubernetes Engine Developer
+Service Account User
+```
+See https://cloud.google.com/compute/docs/instances/managing-instance-access#configure_users for additional informations.
+
+### Initialize project
+
+
+```
+cp /opt/gcp/env-gcp.example.sh $HOME/env-gcp.sh
+# Customize $HOME/env-gcp.sh
+. $HOME/env-gcp.sh
+gcloud auth login
+gcloud config set project $PROJECT
+```
+
+### Connect to instances
+
+``` shell
+gcloud compute ssh student@node-X
+```
+
+### Follow Kubernetes install documentation 
+
+https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
+

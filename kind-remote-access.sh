@@ -15,4 +15,4 @@ scp -r "$KIND_SERVER":~/.kube/kind-config-kind "$KUBECONFIG"
 PORT=$(grep server "$KUBECONFIG" | cut -d':' -f 4)
 # Optional: retrieve certs
 # scp -r "$KIND_SERVER":~/src/k8s-school/homefs/.certs ~/src/k8s-school/homefs/
-ssh -nNT -L "$PORT":localhost:"$PORT" clrqserv01.in2p3.fr
+ssh -nNT -L "$PORT":localhost:"$PORT" "$KIND_SERVER"
