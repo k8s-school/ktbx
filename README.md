@@ -10,6 +10,7 @@ goal is to ease sysadmin, devops and developers life.
 
 - [cfssl](https://github.com/cloudflare/cfssl): PKI and TLS toolkit https://cfssl.org/
 - [clouder](https://github.com/k8s-school/clouder): One-liner to create Google Cloud GKE or GCE cluster
+- [gnu-parallel](https://www.gnu.org/software/parallel/): GNU parallel is a shell tool for executing jobs in parallel using one or more computers
 - [go-lang](https://golang.org): The go programming langage tools
 - [gcloud](https://cloud.google.com/sdk/gcloud): Google Cloud command-line tool
 - [helm](https://helm.sh/), and autocompletion: Helm is the package manager for Kubernetes
