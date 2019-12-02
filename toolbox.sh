@@ -53,6 +53,7 @@ if [ "$DEV" = true ]; then
     MOUNTS="$MOUNTS -v $DIR/rootfs/opt:/opt"
 fi
 MOUNTS="$MOUNTS --volume "$DIR"/homefs:$HOME"
+MOUNTS="$MOUNTS --volume "$HOME/.kube":$HOME/.kube"
 MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
 

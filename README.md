@@ -35,11 +35,9 @@ sudo apt-get install curl docker.io
 # then add current user to docker group and restart desktop session
 sudo usermod -a -G docker <USER>
 ```
-- Create work directory, and copy KUBECONFIG file inside it
+- Create work directory
 ```shell
 WORKDIR=$HOME/k8s-toolbox
-mkdir -p $WORKDIR/homefs/.kube
-cp $KUBECONFIG $WORKDIR/homefs/.kube/config
 cd $WORKDIR
 ```
 
