@@ -26,7 +26,7 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
 # Install helm
 ENV HELM_VERSION 3.0.0
 RUN wget -O /tmp/helm.tgz \
-    https://get.helm.sh/helm-v${HELM_VERSION}-linux-arm64.tar.gz && \
+    https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cd /tmp && \
     tar zxvf /tmp/helm.tgz && \
     rm /tmp/helm.tgz && \
