@@ -44,6 +44,13 @@ then
     BASH_OPTS="-it"
 fi
 
+# Create home directory
+HOMEFS="$DIR/homefs"
+mkdir -p "$HOMEFS"
+if [ ! -e "$HOMEFS"/.bashrc ]; then
+    curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/homefs/.bashrc > "$HOMEFS"/.bashrc
+fi
+
 # Launch container
 #
 # Use host network to easily publish k8s dashboard
@@ -52,8 +59,8 @@ if [ "$DEV" = true ]; then
     echo "Running in development mode"
     MOUNTS="$MOUNTS -v $DIR/rootfs/opt:/opt"
 fi
-MOUNTS="$MOUNTS --volume "$DIR"/homefs:$HOME"
-MOUNTS="$MOUNTS --volume "$HOME/.kube":$HOME/.kube"
+MOUNTS="$MOUNTS --volume $HOMEFS:$HOME"
+MOUNTS="$MOUNTS --volume $HOME/.kube:$HOME/.kube"
 MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
 
