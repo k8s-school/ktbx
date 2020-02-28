@@ -49,7 +49,7 @@ chmod +x toolbox.sh
 ```
 `toolbox` launch open a shell inside a Docker container.
 
-**NOTE**: `$WORKDIR/homefs` host directory will be `toolbox` container `home` folder.
+**NOTE**: `toolbox` container `home` folder mount `$WORKDIR/homefs` host directory.
 
 ## How-to
 
