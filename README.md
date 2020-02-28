@@ -37,7 +37,7 @@ sudo usermod -a -G docker <USER>
 ```
 - Create work directory
 ```shell
-WORKDIR=$HOME/k8s-toolbox
+WORKDIR=$HOME/k8s
 cd $WORKDIR
 ```
 
@@ -65,8 +65,7 @@ Service Account User
 ```
 See https://cloud.google.com/compute/docs/instances/managing-instance-access#configure_users for additional informations.
 
-### Initialize project
-
+### Initialize gcloud project
 
 ```
 cp /opt/gcp/env-gcp.example.sh $HOME/env-gcp.sh
