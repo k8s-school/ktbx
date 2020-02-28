@@ -44,8 +44,12 @@ cd $WORKDIR
 ### Launch
 ```shell
 curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox.sh
+chmod +x toolbox.sh
 ./toolbox.sh
 ```
+`toolbox` launch open a shell inside a Docker container.
+
+**NOTE**: `$WORKDIR/homefs` host directory will be `toolbox` container `home` folder.
 
 ## How-to
 
