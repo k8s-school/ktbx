@@ -46,7 +46,7 @@ cd $WORKDIR
 curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox.sh
 chmod +x toolbox.sh
 ./toolbox.sh
-# If you have a valid KUBECONFIG file in $HOME/.kube/config, command below will work fine:
+# If you have a valid KUBECONFIG file on your host, inside $HOME/.kube/config, command below will work fine:
 kubectl get nodes
 ```
 `toolbox` launch open a shell inside a Docker container.
