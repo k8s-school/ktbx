@@ -90,5 +90,7 @@ ssh clusX-0
 
 ### Follow Kubernetes install documentation 
 
-https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
+[Official Kubernetes installation documentation with kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/)
+[Simple Kubernetes installation procedure with kubeadm](https://www.k8s-school.fr/resources/en/blog/kubeadm/)
+
 
