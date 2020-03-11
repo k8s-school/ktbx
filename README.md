@@ -84,7 +84,8 @@ gcloud config set project $PROJECT
 ### Connect to instances
 
 ``` shell
-gcloud compute ssh student@node-X
+# ssh is an alias for  `gcloud compute ssh`
+ssh clusX-0
 ```
 
 ### Follow Kubernetes install documentation 
