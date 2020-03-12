@@ -12,3 +12,4 @@ git checkout v1.16
 cd $HOME
 git clone https://github.com/luksa/kubernetes-in-action.git
 git clone https://github.com/k8s-school/k8s-advanced
+git clone https://github.com/k8s-school/k8s-school
