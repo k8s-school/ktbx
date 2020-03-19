@@ -38,6 +38,7 @@ sudo usermod -a -G docker <USER>
 - Create work directory
 ```shell
 WORKDIR=$HOME/k8s
+mkdir $WORKDIR
 cd $WORKDIR
 ```
 
