@@ -35,14 +35,13 @@ sudo apt-get install curl docker.io
 # then add current user to docker group and restart desktop session
 sudo usermod -a -G docker <USER>
 ```
-- Create work directory
-```shell
-WORKDIR=$HOME/k8s
-cd $WORKDIR
-```
 
 ### Launch
 ```shell
+# Create work directory
+WORKDIR=$HOME/k8s
+mkdir -p $WORKDIR
+cd $WORKDIR
 curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox.sh
 chmod +x toolbox.sh
 ./toolbox.sh
