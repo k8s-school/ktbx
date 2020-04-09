@@ -13,7 +13,7 @@ RUN apt-get -y update && \
 RUN apt-get -y install curl bash-completion git gnupg jq \
     lsb-release \
     openssh-client parallel \
-    unzip vim wget
+    unzip vim wget zsh
 
 # Install Google cloud SDK
 RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
@@ -76,10 +76,6 @@ RUN wget https://dl.google.com/go/$GO_PKG && \
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
-
-# Install kubectl completion
-# setup autocomplete in bash, bash-completion package should be installed first.
-RUN kubectl completion bash > /etc/kubectl.completion
 
 RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases
 
