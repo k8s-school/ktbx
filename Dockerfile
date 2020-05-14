@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 MAINTAINER Fabrice Jammes <fabrice.jammes@in2p3.fr>
 
 # RUN echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
