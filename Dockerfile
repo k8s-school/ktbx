@@ -24,7 +24,7 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
     apt-get -y update && apt-get -y install google-cloud-sdk
 
 # Install helm
-ENV HELM_VERSION 3.0.2
+ENV HELM_VERSION 3.3.3
 RUN wget -O /tmp/helm.tgz \
     https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cd /tmp && \
@@ -34,13 +34,13 @@ RUN wget -O /tmp/helm.tgz \
     mv /tmp/linux-amd64/helm /usr/local/bin/helm
 
 # Install kubectl
-ENV KUBECTL_VERSION 1.16.3
+ENV KUBECTL_VERSION 1.19.0
 RUN wget -O /usr/local/bin/kubectl \
     https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x /usr/local/bin/kubectl
 
 # Install kustomize
-ENV KUSTOMIZE_VERSION v3.3.0
+ENV KUSTOMIZE_VERSION v3.8.4
 RUN wget -O /tmp/kustomize.tgz \
     https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz && \
     tar zxvf /tmp/kustomize.tgz && \
@@ -49,7 +49,7 @@ RUN wget -O /tmp/kustomize.tgz \
     mv kustomize /usr/local/bin/kustomize
 
 # Install kubeval
-ENV KUBEVAL_VERSION 0.14.0
+ENV KUBEVAL_VERSION 0.15.0
 RUN wget https://github.com/garethr/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz && \
     tar xf kubeval-linux-amd64.tar.gz && \
     mv kubeval /usr/local/bin && \
@@ -68,7 +68,7 @@ RUN wget -q --show-progress --https-only --timestamping \
     mv cfssl_linux-amd64 /usr/local/bin/cfssl && \
     mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 
-ENV GO_VERSION 1.12.2
+ENV GO_VERSION 1.15.2
 ENV GO_PKG go${GO_VERSION}.linux-amd64.tar.gz
 RUN wget https://dl.google.com/go/$GO_PKG && \
     tar -xvf $GO_PKG && \
