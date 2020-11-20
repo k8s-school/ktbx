@@ -7,7 +7,7 @@ alias ssh="gcloud compute ssh"
 alias kshell='kubectl run -i --rm --tty shell --image=ubuntu --restart=Never -- bash'
 alias ll="ls -la"
 
-export PATH=/opt/bin:$GOPATH/bin:$GOROOT/bin:$PATH
+export PATH=/opt/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.krew/bin:$PATH
 source <(helm completion bash)
 
 # k8s cli helpers
