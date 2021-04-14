@@ -10,10 +10,17 @@ RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y clean
 
-RUN apt-get -y install curl bash-completion git gnupg jq \
-    lsb-release \
+RUN apt-get -y update && \
+    apt-get -y install curl bash-completion git gnupg jq \
+    kubectx lsb-release locales make \
     openssh-client parallel \
     unzip vim wget zsh
+
+# Uncomment en_US.UTF-8 for inclusion in generation
+RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
+
+# Generate locale
+RUN locale-gen
 
 # Install Google cloud SDK
 RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \

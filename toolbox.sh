@@ -4,10 +4,14 @@
 
 # @author  Fabrice Jammes
 
-set -e
-# set -x
+set -eu
+set -x
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
+CMD=""
+DEV=""
+HOMEFS=""
+MOUNTS=""
 
 usage() {
     cat << EOD
@@ -23,11 +27,12 @@ EOD
 }
 
 # Get the options
-while getopts hC:d c ; do
+while getopts hC:Hd c ; do
     case $c in
         C) CMD="${OPTARG}" ;;
         d) DEV=true ;;
         h) usage ; exit 0 ;;
+        H) HOMEFS="$HOME" ;;
         \?) usage ; exit 2 ;;
     esac
 done
@@ -41,14 +46,24 @@ fi
 if [ -z "${CMD}" ]
 then
     CMD="bash"
+fi
+if [ "$CMD" = "zsh" -o "$CMD" = "bash" ]
+then
     BASH_OPTS="-it"
+fi
+if [ "$CMD" = "zsh"]
+then
+   CMD="LC_ALL=C.UTF-8 zsh"
 fi
 
 # Create home directory
-HOMEFS="$DIR/homefs"
-mkdir -p "$HOMEFS"
-if [ ! -e "$HOMEFS"/.bashrc ]; then
-    curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/homefs/.bashrc > "$HOMEFS"/.bashrc
+if [ -z "${HOMEFS}" ]
+then
+    HOMEFS="$DIR/homefs"
+    mkdir -p "$HOMEFS"
+    if [ ! -e "$HOMEFS"/.bashrc ]; then
+        curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/homefs/.bashrc > "$HOMEFS"/.bashrc
+    fi
 fi
 
 # Launch container
@@ -71,5 +86,5 @@ echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
 docker run $BASH_OPTS --net=host \
     $MOUNTS --rm \
     --user=$(id -u):$(id -g $USER) \
-    -w $HOME \
+    -w $HOME -- \
     "$IMAGE" $CMD
