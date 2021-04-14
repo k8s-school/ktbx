@@ -83,6 +83,7 @@ gcloud config set project $PROJECT
 ### Connect to instances
 
 ``` shell
+# WARNING: use empty password for ssh key!
 # ssh is an alias for  `gcloud compute ssh`
 ssh clusX-0
 ```
