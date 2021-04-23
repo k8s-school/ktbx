@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Run docker container containing kubectl tools and scripts
 
 # @author  Fabrice Jammes
 
-set -eu
-set -x
+set -euo pipefail
+#set -x
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 CMD=""
@@ -51,7 +51,7 @@ if [ "$CMD" = "zsh" -o "$CMD" = "bash" ]
 then
     BASH_OPTS="-it"
 fi
-if [ "$CMD" = "zsh"]
+if [ "$CMD" = "zsh" ]
 then
    CMD="LC_ALL=C.UTF-8 zsh"
 fi

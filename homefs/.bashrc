@@ -1,7 +1,6 @@
 . /etc/bash_completion
 
-PS1="\u@[k8s-toolbox]:\w # "
-
+PS1="{\[\e[32m\]\u\[\e[m\]@\[\e[36m\]k8s-toolbox\[\e[m\]:\W}$ "
 
 alias ssh="gcloud compute ssh"
 alias kshell='kubectl run -i --rm --tty shell --image=ubuntu --restart=Never -- bash'
