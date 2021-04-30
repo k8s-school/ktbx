@@ -31,7 +31,7 @@ RUN export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
     apt-get -y update && apt-get -y install google-cloud-sdk
 
 # Install helm
-ENV HELM_VERSION 3.3.3
+ENV HELM_VERSION 3.5.4
 RUN wget -O /tmp/helm.tgz \
     https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cd /tmp && \
