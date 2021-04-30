@@ -5,7 +5,7 @@
 # @author  Fabrice Jammes
 
 set -euo pipefail
-#set -x
+set -x
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 CMD=""
@@ -51,10 +51,10 @@ if [ "$CMD" = "zsh" -o "$CMD" = "bash" ]
 then
     BASH_OPTS="-it"
 fi
-if [ "$CMD" = "zsh" ]
-then
-   CMD="LC_ALL=C.UTF-8 zsh"
-fi
+#if [ "$CMD" = "zsh" ]
+#then
+#   CMD="LC_ALL=C.UTF-8 zsh"
+#fi
 
 # Create home directory
 if [ -z "${HOMEFS}" ]
