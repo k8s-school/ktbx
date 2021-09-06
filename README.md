@@ -85,7 +85,8 @@ gcloud config set project $PROJECT
 ``` shell
 # WARNING: use empty password for ssh key!
 # ssh is an alias for  `gcloud compute ssh`
-ssh clusX-0
+# Replace <X> with your user ID
+ssh clus<X>-0
 ```
 
 ### Follow Kubernetes install documentation 
