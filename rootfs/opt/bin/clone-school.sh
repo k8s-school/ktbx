@@ -14,6 +14,7 @@ do
         git clone $r
     else
         cd $reposrc
-        git pull $REPOSRC
+        git pull
     fi
 done
+cd $HOME
