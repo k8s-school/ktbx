@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bookworm
 MAINTAINER Fabrice Jammes <fabrice.jammes@in2p3.fr>
 
 # RUN echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
@@ -13,7 +13,7 @@ RUN apt-get -y update && \
 RUN apt-get -y update && \
     apt-get -y install curl bash-completion git gnupg jq \
     kubectx lsb-release locales make \
-    openssh-client parallel \
+    nano openssh-client parallel \
     unzip vim wget zsh
 
 # Uncomment en_US.UTF-8 for inclusion in generation
