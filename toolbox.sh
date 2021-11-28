@@ -50,6 +50,8 @@ fi
 if [ "$CMD" = "zsh" -o "$CMD" = "bash" ]
 then
     BASH_OPTS="-it"
+else
+    BASH_OPTS="-t"
 fi
 #if [ "$CMD" = "zsh" ]
 #then
