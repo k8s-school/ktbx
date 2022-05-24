@@ -8,11 +8,13 @@ REPOS="https://github.com/k8s-school/examples https://github.com/luksa/kubernete
 
 for r in $REPOS
 do
-    reposrc=$(basename $r)
+    reposrc="$HOME/$(basename $r)"
     if [ ! -d "$reposrc" ]
     then
+        echo "Cloning $reposrc"
         git clone "$r"
     else
+        echo "Updating $reposrc"
         cd "$reposrc"
         git pull
     fi
