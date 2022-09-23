@@ -29,7 +29,7 @@ RUN cd /opt && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/download
     rm $CLOUD_SDK
 
 # Install helm
-ENV HELM_VERSION 3.5.4
+ENV HELM_VERSION 3.9.0
 RUN wget -O /tmp/helm.tgz \
     https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
     cd /tmp && \
