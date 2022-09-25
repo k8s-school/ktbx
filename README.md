@@ -87,6 +87,15 @@ gcloud config set project $PROJECT
 # ssh is an alias for  `gcloud compute ssh`
 # Replace <X> with your user ID
 ssh clus<X>-0
+
+# Set the zone if needed
+gcloud compute instances list
+NAME     ZONE          MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+clus0-0  asia-east1-c  n1-standard-2               10.140.0.59  35.221.224.110  RUNNING
+clus0-1  asia-east1-c  n1-standard-2               10.140.0.57  35.221.200.235  RUNNING
+clus0-2  asia-east1-c  n1-standard-2               10.140.0.58  35.185.155.134  RUNNING
+
+gcloud config set compute/zone <ZONE>
 ```
 
 ### Follow Kubernetes install documentation 
