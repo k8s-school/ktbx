@@ -14,7 +14,8 @@ RUN apt-get -y update && \
     apt-get -y install curl bash-completion git gnupg jq \
     kubectx lsb-release locales make \
     nano openssh-client parallel \
-    unzip vim wget zsh
+    unzip vim wget zsh \
+    apt-transport-https ca-certificates gnupg
 
 # Uncomment en_US.UTF-8 for inclusion in generation
 RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
@@ -23,10 +24,7 @@ RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
 # Install Google cloud SDK
-ENV CLOUD_SDK google-cloud-sdk-360.0.0-linux-x86_64.tar.gz
-RUN cd /opt && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/${CLOUD_SDK} && \
-    tar zxvf $CLOUD_SDK && \
-    rm $CLOUD_SDK
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli -y
 
 # Install helm
 ENV HELM_VERSION 3.9.0
