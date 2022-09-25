@@ -2,9 +2,6 @@
 
 PS1="{\[\e[32m\]\u\[\e[m\]@\[\e[36m\]k8s-toolbox\[\e[m\]:\W}$ "
 
-. /opt/google-cloud-sdk/path.bash.inc
-. /opt/google-cloud-sdk/completion.bash.inc
-
 export PATH=/opt/bin:$GOPATH/bin:$GOROOT/bin:$HOME/.krew/bin:$PATH
 source <(helm completion bash)
 
