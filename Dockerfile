@@ -86,3 +86,10 @@ COPY rootfs /
 
 ARG FORCE_GO_REBUILD=false
 RUN $GOROOT/bin/go get -v github.com/k8s-school/clouder
+
+# Install k9s
+# RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz && chmod +x "/tmp/k9s" && sudo mv "/tmp/k9s" "/usr/local/bin/k9s"
+RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" \
+  && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz -C "/tmp" \
+  && chmod +x "/tmp/k9s" \
+  && mv "/tmp/k9s" "/usr/local/bin/k9s"
