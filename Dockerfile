@@ -24,7 +24,7 @@ RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
 # Install Google cloud SDK
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli -y
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin -y
 
 # Install helm
 ENV HELM_VERSION 3.9.0
@@ -37,7 +37,7 @@ RUN wget -O /tmp/helm.tgz \
     mv /tmp/linux-amd64/helm /usr/local/bin/helm
 
 # Install kubectl
-ENV KUBECTL_VERSION 1.19.0
+ENV KUBECTL_VERSION 1.25.0
 RUN wget -O /usr/local/bin/kubectl \
     https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x /usr/local/bin/kubectl
@@ -82,14 +82,15 @@ ENV GOPATH /go
 
 RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases
 
-COPY rootfs /
-
-ARG FORCE_GO_REBUILD=false
-RUN $GOROOT/bin/go get -v github.com/k8s-school/clouder
-
 # Install k9s
 # RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz && chmod +x "/tmp/k9s" && sudo mv "/tmp/k9s" "/usr/local/bin/k9s"
 RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" \
   && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz -C "/tmp" \
   && chmod +x "/tmp/k9s" \
   && mv "/tmp/k9s" "/usr/local/bin/k9s"
+
+COPY rootfs /
+
+ARG FORCE_GO_REBUILD=false
+RUN $GOROOT/bin/go get -v github.com/k8s-school/clouder
+

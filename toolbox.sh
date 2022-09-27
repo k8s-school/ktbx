@@ -78,6 +78,7 @@ if [ "$DEV" = true ]; then
 fi
 MOUNTS="$MOUNTS --volume $HOMEFS:$HOME"
 MOUNTS="$MOUNTS --volume $HOME/.kube:$HOME/.kube"
+# MOUNTS="$MOUNTS --volume $HOME/.config:$HOME/.config"
 MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
 
