@@ -1,5 +1,6 @@
-FROM debian:bookworm
-MAINTAINER Fabrice Jammes <fabrice.jammes@in2p3.fr>
+FROM debian:bookworm as base
+
+LABEL org.opencontainers.image.authors="Fabrice Jammes <fabrice.jammes@in2p3.fr>"
 
 # RUN echo "deb http://ftp.debian.org/debian stretch-backports main" >> /etc/apt/sources.list
 
@@ -23,18 +24,15 @@ RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
 # Generate locale
 RUN locale-gen
 
-# Install Google cloud SDK
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin -y
-
 # Install helm
-ENV HELM_VERSION 3.9.0
-RUN wget -O /tmp/helm.tgz \
-    https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
-    cd /tmp && \
-    tar zxvf /tmp/helm.tgz && \
-    rm /tmp/helm.tgz && \
-    chmod +x /tmp/linux-amd64/helm && \
-    mv /tmp/linux-amd64/helm /usr/local/bin/helm
+ENV HELM_VERSION v3.10.3
+RUN curl -sL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash -s -- --version "$HELM_VERSION"
+
+# Install argo client
+ENV ARGOPROJ_HELPER_VERSION v3.4.4
+ENV ARGOPROJ_SRC /tmp/argoproj-helper
+RUN git clone --depth 1 -b "$ARGOPROJ_HELPER_VERSION" --single-branch https://github.com/k8s-school/argoproj-helper.git "$ARGOPROJ_SRC"
+RUN "$ARGOPROJ_SRC"/argo-client-install.sh
 
 # Install kubectl
 ENV KUBECTL_VERSION 1.25.0
@@ -51,27 +49,16 @@ RUN wget -O /tmp/kustomize.tgz \
     chmod +x kustomize && \
     mv kustomize /usr/local/bin/kustomize
 
-# Install kubeval
-ENV KUBEVAL_VERSION 0.15.0
-RUN wget https://github.com/garethr/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz && \
-    tar xf kubeval-linux-amd64.tar.gz && \
-    mv kubeval /usr/local/bin && \
-    rm kubeval-linux-amd64.tar.gz
+# Install Stern
+ENV STERN_VERSION 1.22.0
+RUN wget -O /tmp/stern.tgz \
+    https://github.com/stern/stern/releases/download/v${STERN_VERSION}/stern_${STERN_VERSION}_linux_amd64.tar.gz && \
+    tar zxvf /tmp/stern.tgz && \
+    rm /tmp/stern.tgz && \
+    chmod +x stern && \
+    mv stern /usr/local/bin/stern
 
-
-ENV STERN_VERSION 1.11.0
-RUN wget -O /usr/local/bin/stern \
-    https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_linux_amd64 && \
-    chmod +x /usr/local/bin/stern
-
-RUN wget -q --show-progress --https-only --timestamping \
-    https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
-    https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 && \
-    chmod o+x cfssl_linux-amd64 cfssljson_linux-amd64 && \
-    mv cfssl_linux-amd64 /usr/local/bin/cfssl && \
-    mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
-
-ENV GO_VERSION 1.15.2
+ENV GO_VERSION 1.19.5
 ENV GO_PKG go${GO_VERSION}.linux-amd64.tar.gz
 RUN wget https://dl.google.com/go/$GO_PKG && \
     tar -xvf $GO_PKG && \
@@ -82,6 +69,27 @@ ENV GOPATH /go
 
 RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases
 
+FROM base as full
+RUN echo "Build full k8s-toolbox"
+
+# Install Google cloud SDK
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin -y
+
+# Install kubeval
+ENV KUBEVAL_VERSION 0.15.0
+RUN wget https://github.com/garethr/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz && \
+    tar xf kubeval-linux-amd64.tar.gz && \
+    mv kubeval /usr/local/bin && \
+    rm kubeval-linux-amd64.tar.gz
+
+# Install cfssl
+RUN wget -q --show-progress --https-only --timestamping \
+    https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
+    https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 && \
+    chmod o+x cfssl_linux-amd64 cfssljson_linux-amd64 && \
+    mv cfssl_linux-amd64 /usr/local/bin/cfssl && \
+    mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+
 # Install k9s
 # RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz && chmod +x "/tmp/k9s" && sudo mv "/tmp/k9s" "/usr/local/bin/k9s"
 RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" \
@@ -89,8 +97,6 @@ RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/rel
   && chmod +x "/tmp/k9s" \
   && mv "/tmp/k9s" "/usr/local/bin/k9s"
 
-COPY rootfs /
-
 ARG FORCE_GO_REBUILD=false
-RUN $GOROOT/bin/go get -v github.com/k8s-school/clouder
+RUN $GOROOT/bin/go install -v github.com/k8s-school/clouder@latest
 
