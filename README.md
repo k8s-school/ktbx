@@ -73,6 +73,7 @@ See https://cloud.google.com/compute/docs/instances/managing-instance-access#con
 ### Initialize gcloud project
 
 ```
+# or simply run gcloud-setup.sh
 cp /opt/gcp/env-gcp.example.sh $HOME/env-gcp.sh
 # Customize $HOME/env-gcp.sh
 . $HOME/env-gcp.sh
