@@ -47,7 +47,7 @@ if [ -z "${CMD}" ]
 then
     CMD="bash"
 fi
-if [ "$CMD" = "zsh" -o "$CMD" = "bash" ]
+if [ "$CMD" = "zsh" -o "$CMD" = "bash" -o "$CMD" = "gcloud auth login" ]
 then
     BASH_OPTS="-it"
 else
