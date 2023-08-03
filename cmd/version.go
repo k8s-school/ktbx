@@ -33,7 +33,7 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print the version number of kind-helper",
+	Short: "Print the version number of k8s-toolbox",
 	Run: func(cmd *cobra.Command, args []string) {
 		version, sum := Version()
 		quiet, _ := cmd.Flags().GetBool("quiet")
@@ -42,7 +42,7 @@ var versionCmd = &cobra.Command{
 			fmt.Print(version)
 			return
 		} else {
-			fmt.Printf("kind-helper, version: %v, checksum: %v", version, sum)
+			fmt.Printf("k8s-toolbox, version: %v, checksum: %v", version, sum)
 		}
 	},
 }

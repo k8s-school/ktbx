@@ -19,7 +19,7 @@ Usage: `basename $0` [options] RELEASE_TAG
   Available options:
     -h          this message
 
-Create a kind-helper release tagged "RELEASE_TAG"
+Create a k8s-toolbox release tagged "RELEASE_TAG"
 RELEASE_TAG must have the semver format. 
 EOD
 }
@@ -41,7 +41,7 @@ fi
 releasetag=$1
 
 # TODO update VERSION in README.md
-sed -i "s/^KINDHELPER_VERSION=.*$/KINDHELPER_VERSION='$releasetag'/" $DIR/install.sh
+sed -i "s/^K8S_TOOLBOX_VERSION=.*$/K8S_TOOLBOX_VERSION='$releasetag'/" $DIR/install.sh
 git add .
 git commit -m "Publish release $releasetag"
 git tag -a "$releasetag" -m "Version $releasetag"

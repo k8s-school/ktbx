@@ -1,4 +1,4 @@
-module github.com/k8s-school/kind-helper
+module github.com/k8s-school/k8s-toolbox
 
 go 1.19
 

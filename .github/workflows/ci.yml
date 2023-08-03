@@ -1,0 +1,38 @@
+# Qserv operator CI workflow
+---
+name: "CI"
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+jobs:
+  main:
+    name: Validate k8s install
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Uninstall go provided by Ubuntu
+        run: |
+          sudo apt-get remove golang-go
+          sudo apt-get remove --auto-remove golang-go
+          sudo apt-get purge golang-go
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.20.3'
+      - run: go version
+      - name: Install go dependencies
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build kind-helper
+        run: |
+          go build .
+      - name: Install k8s using kind
+        run: |
+          ./kind-helper create -s
+          kubectl get pods -n kube-system
+          kubectl get nodes
+      - name: Run tests
+        run: |
+          ./tests/launch.sh

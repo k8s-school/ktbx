@@ -27,7 +27,7 @@ goal is to ease sysadmin, devops and developers life.
 - Ubuntu LTS is recommended
 - Internet access
 - `sudo` access
-- And up and running Kubernetes cluster, and related KUBECONFIG file (see [Light speed Kubernetes installation](https://github.com/k8s-school/kind-helper/blob/master/README.md))
+- And up and running Kubernetes cluster, and related KUBECONFIG file (see [Light speed Kubernetes installation](https://github.com/k8s-school/k8s-toolbox/blob/master/README.md))
 - Install dependencies below:
 ```shell
 sudo apt-get install curl docker.io

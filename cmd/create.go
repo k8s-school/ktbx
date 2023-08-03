@@ -11,7 +11,7 @@ import (
 
 func createCluster() {
 
-	c := getKindHelperConfig()
+	c := getK8sToolboxConfig()
 	logConfiguration()
 	generateKindConfigFile(c)
 

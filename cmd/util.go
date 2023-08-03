@@ -12,9 +12,9 @@ func logConfiguration() {
 	c := viper.AllSettings()
 	bs, err := yaml.Marshal(c)
 	if err != nil {
-		logger.Fatalf("unable to marshal kind-helper configuration to YAML: %v", err)
+		logger.Fatalf("unable to marshal k8s-toolbox configuration to YAML: %v", err)
 	}
-	logger.Infof("Current kind-helper configuration:\n%s", bs)
+	logger.Infof("Current k8s-toolbox configuration:\n%s", bs)
 }
 
 func format(s string, v interface{}) string {

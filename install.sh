@@ -12,7 +12,7 @@ Usage: `basename $0` [options]
   Available options:
     -h           This message
 
-  Install kind, kubectl and kind-helper which then manages a Kubernetes cluster with kind
+  Install kind, kubectl and k8s-toolbox which then manages a Kubernetes cluster with kind
 EOD
 }
 
@@ -34,8 +34,8 @@ KUBECTL_BIN="/usr/local/bin/kubectl"
 KUBECTL_VERSION="v1.25.0"
 KIND_BIN="/usr/local/bin/kind"
 KIND_VERSION="v0.15.0"
-KINDHELPER_BIN="/usr/local/bin/kind-helper"
-KINDHELPER_VERSION='v1.0.2-rc1'
+K8S_TOOLBOX_BIN="/usr/local/bin/k8s-toolbox"
+K8S_TOOLBOX_VERSION='v1.0.2-rc1'
 
 # If kind exists, compare current version to desired one
  if [ -e $KIND_BIN ]; then
@@ -69,37 +69,37 @@ if [ ! -e $KUBECTL_BIN ]; then
     sudo mv /tmp/kubectl "$KUBECTL_BIN"
 fi
 
-# If kind-helper exists, compare current version to desired one
-# TODO try to run kind-helper instead, it can be in an other place than KINDHELPER_BIN
+# If k8s-toolbox exists, compare current version to desired one
+# TODO try to run k8s-toolbox instead, it can be in an other place than K8S_TOOLBOX_BIN
 # TODO use `which` to perform above tasks?
-if [ -e $KINDHELPER_BIN ]; then
-    CURRENT_KINDHELPER_VERSION="$(kind-helper version -q | tail -n 1)"
-    if [ "$CURRENT_KINDHELPER_VERSION" != "$KINDHELPER_VERSION" ]; then
-      sudo rm "$KINDHELPER_BIN"
+if [ -e $K8S_TOOLBOX_BIN ]; then
+    CURRENT_K8S_TOOLBOX_VERSION="$(k8s-toolbox version -q | tail -n 1)"
+    if [ "$CURRENT_K8S_TOOLBOX_VERSION" != "$K8S_TOOLBOX_VERSION" ]; then
+      sudo rm "$K8S_TOOLBOX_BIN"
     fi
 fi
 
-if [ ! -e $KINDHELPER_BIN ]; then
+if [ ! -e $K8S_TOOLBOX_BIN ]; then
 
     VERSION=""
-    RELEASES_URL="https://github.com/k8s-school/kind-helper/releases"
-    FILE_BASENAME="kind-helper"
-    LATEST="$(curl -s https://api.github.com/repos/k8s-school/kind-helper/releases/latest | jq --raw-output '.tag_name')"
+    RELEASES_URL="https://github.com/k8s-school/k8s-toolbox/releases"
+    FILE_BASENAME="k8s-toolbox"
+    LATEST="$(curl -s https://api.github.com/repos/k8s-school/k8s-toolbox/releases/latest | jq --raw-output '.tag_name')"
 
-    test -z "$KINDHELPER_VERSION" && KINDHELPER_VERSION="$LATEST"
+    test -z "$K8S_TOOLBOX_VERSION" && K8S_TOOLBOX_VERSION="$LATEST"
 
-    test -z "$KINDHELPER_VERSION" && {
-        echo "Unable to get kind-helper version." >&2
+    test -z "$K8S_TOOLBOX_VERSION" && {
+        echo "Unable to get k8s-toolbox version." >&2
         exit 1
     }
 
     BIN_FILE="${FILE_BASENAME}_${OS}_${ARCH}"
 
-    echo "Downloading kind-helper $KINDHELPER_VERSION..."
-    curl -Lo "/tmp/$BIN_FILE" "$RELEASES_URL/download/$KINDHELPER_VERSION/$BIN_FILE"
-    curl -Lo /tmp/kind-helper.checksums.txt "$RELEASES_URL/download/$KINDHELPER_VERSION/checksums.txt"
+    echo "Downloading k8s-toolbox $K8S_TOOLBOX_VERSION..."
+    curl -Lo "/tmp/$BIN_FILE" "$RELEASES_URL/download/$K8S_TOOLBOX_VERSION/$BIN_FILE"
+    curl -Lo /tmp/k8s-toolbox.checksums.txt "$RELEASES_URL/download/$K8S_TOOLBOX_VERSION/checksums.txt"
     echo "Verifying checksums..."
-    (cd /tmp && sha256sum --ignore-missing --check kind-helper.checksums.txt)
+    (cd /tmp && sha256sum --ignore-missing --check k8s-toolbox.checksums.txt)
     chmod +x "/tmp/$BIN_FILE"
-    sudo mv "/tmp/$BIN_FILE" "$KINDHELPER_BIN"
+    sudo mv "/tmp/$BIN_FILE" "$K8S_TOOLBOX_BIN"
 fi

@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/k8s-school/kind-helper/resources"
+	"github.com/k8s-school/k8s-toolbox/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,15 +20,15 @@ var configgenCmd = &cobra.Command{
 	Use:   "configgen",
 	Short: "Generate a configuration file for kind",
 	Long: `Generate a configuration file for kind based
-on .kind-helper high-level configuration file
+on .k8s-toolbox high-level configuration file
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		c := getKindHelperConfig()
+		c := getK8sToolboxConfig()
 		generateKindConfigFile(c)
 	},
 }
 
-type KindHelperConfig struct {
+type K8sToolboxConfig struct {
 	ExtraMountPath  string `mapstructure:"extramountpath"`
 	LocalCertSANs   bool   `mapstructure:"localcertsans"`
 	PrivateRegistry string `mapstructure:"privateregistry"`
@@ -50,12 +50,12 @@ func init() {
 	// configgenCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func getKindHelperConfig() KindHelperConfig {
+func getK8sToolboxConfig() K8sToolboxConfig {
 
-	var c KindHelperConfig
+	var c K8sToolboxConfig
 
 	if err := viper.UnmarshalKey(KIND, &c); err != nil {
-		logger.Fatalf("Error while getting kind-helper configuration: %v", err)
+		logger.Fatalf("Error while getting k8s-toolbox configuration: %v", err)
 	}
 
 	c.UseCalico = viper.GetBool("calico")
@@ -65,7 +65,7 @@ func getKindHelperConfig() KindHelperConfig {
 	return c
 }
 
-func generateKindConfigFile(c KindHelperConfig) {
+func generateKindConfigFile(c K8sToolboxConfig) {
 	logger.Infof("Generate kind configuration file: %s", kindConfigFile)
 	logger.Debugf("for configuration: %v", c)
 
@@ -79,7 +79,7 @@ func generateKindConfigFile(c KindHelperConfig) {
 	f.WriteString(kindconfig)
 }
 
-func applyTemplate(sc KindHelperConfig) string {
+func applyTemplate(sc K8sToolboxConfig) string {
 
 	// TODO check https://github.com/helm/helm/blob/main/pkg/chartutil/values.go
 

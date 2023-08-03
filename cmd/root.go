@@ -39,19 +39,19 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "kind-helper",
+	Use:   "k8s-toolbox",
 	Short: "A high-level cli on top of kind",
 	Long: `Creates kind-based Kubernetes cluster
 
 Examples:
   # Create a configuration file for kind
-  ./kind-helper configgen
+  ./k8s-toolbox configgen
 
   # Create a single-node cluster using calico CNI
-  ./kind-helper create --single --calico
+  ./k8s-toolbox create --single --calico
 
   # Delete kind cluster
-  ./kind-helper delete
+  ./k8s-toolbox delete
 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -74,7 +74,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "configuration file (default to $HOME/.kind-helper.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "configuration file (default to $HOME/.k8s-toolbox.yaml)")
 
 	rootCmd.PersistentFlags().BoolP("single", "s", false, "create a single node k8s cluster, take precedence over configuration file 'workers' parameter")
 	rootCmd.PersistentFlags().BoolP("calico", "c", false, "install calico CNI, take precedence over configuration file 'usecalico' parameter")
@@ -91,7 +91,7 @@ func initLogger() {
 		panic(err)
 	}
 
-	outputPath := fmt.Sprintf("/tmp/kind-helper-%s.log", user.Username)
+	outputPath := fmt.Sprintf("/tmp/k8s-toolbox-%s.log", user.Username)
 
 	rawJSON := []byte(`{
 		"level": "debug",
@@ -147,7 +147,7 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		viper.SetConfigName(".kind-helper")
+		viper.SetConfigName(".k8s-toolbox")
 	}
 
 	// If a config file is found, read it in.
