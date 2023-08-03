@@ -1,0 +1,17 @@
+kind:
+  # Use host directory to share data between host and kind node
+  # host directory will be mounted on /mnt/extra on each node
+  extraMountPath: /media
+
+  # Sets "127.0.0.1" as an extra Subject Alternative Names (SANs) for the API Server signing certificate.
+  # See https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/#kubeadm-k8s-io-v1beta3-APIServer
+  # Usefull to access API server through a ssh tunnel
+  localcertsans: false
+
+  # Use calico CNI instead of kindnet
+  # useCalico: true
+  # Number of worker nodes
+  workers: 1
+
+  # Use an private registry with insecure_skip_verify tls mode
+  privateRegistry: "docker-registry.docker-registry:5000"

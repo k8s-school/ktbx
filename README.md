@@ -1,107 +1,83 @@
 [<img src="http://k8s-school.fr/images/logo.svg" alt="K8s-school Logo, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
 
-# ⎈ k8s-toolbox
-The ultimate Kubernetes client toolbox, embedded inside a customized container.
+# kind-helper
 
-## What's embedded in that toolbox?
+Helper to install Kubernetes clusters, based on [kind], on any Linux system. Allow to easily setup:
+- multi-nodes cluster
+- use of Calico CNI
+- use of an insecure private registry
 
-This toolbox offers a convenient set of popular Kubernetes client tools. Its
-goal is to ease sysadmin, devops and developers life.
+Can be used for VMs launched by a  CI/CD platform, including [Github Action](https://github.com/k8s-school/kind-helper/actions?query=workflow%3A"CI")
 
-- [cfssl](https://github.com/cloudflare/cfssl): PKI and TLS toolkit https://cfssl.org/
-- [clouder](https://github.com/k8s-school/clouder): One-liner to create Google Cloud GKE or GCE cluster
-- [gnu-parallel](https://www.gnu.org/software/parallel/): GNU parallel is a shell tool for executing jobs in parallel using one or more computers
-- [go-lang](https://golang.org): The go programming langage tools
-- [gcloud](https://cloud.google.com/sdk/gcloud): Google Cloud command-line tool
-- [helm](https://helm.sh/), and autocompletion: Helm is the package manager for Kubernetes
-- **[kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)** and autocompletion: kubectl controls the Kubernetes cluster manager.
-- [kubectl aliases](https://github.com/ahmetb/kubectl-aliases): Programmatically generated handy kubectl aliases. https://ahmet.im/blog/kubectl-aliases/
-- [kubeval](https://github.com/instrumenta/kubeval): Validation of kubernetes YAML configurations
-- [kustomize](https://github.com/kubernetes-sigs/kustomize): Customization of kubernetes YAML configurations
-- [stern](https://github.com/wercker/stern): Multi pod and container log tailing for Kubernetes
+[![CI Status](https://github.com/k8s-school/kind-helper/workflows/CI/badge.svg?branch=master)](https://github.com/k8s-school/kind-helper/actions?query=workflow%3A"CI")
 
-## Installation
+Support kind v0.10.0 and k8s v1.20
+
+## Run kind on a workstation, in two lines of code
+
+```shell
+# Sudo access is required here
+VERSION="v1.0.1-rc1"
+curl -sfL https://raw.githubusercontent.com/k8s-school/kind-helper/$VERSION/install.sh | bash
+
+# Run a single node k8s cluster with kind
+kind-helper create -s
+
+# Run a 3 nodes k8s cluster with kind
+kind-helper create
+
+# Run a k8s cluster with Calico CNI
+kind-helper create -c
+
+# Delete the kind cluster
+kind-helper delete
+
+```
+
+## Run kind inside Github Actions
+
+
+Check this **[tutorial: build a Kubernetes CI with Kind](https://k8s-school.fr/resources/en/blog/k8s-ci/)** in order to learn how to run [kind](https://github.com/kubernetes-sigs/kind) inside [Travis-CI](https://travis-ci.org/k8s-school/kind-helper).
 
 ### Pre-requisites
 
-- Ubuntu LTS is recommended
-- Internet access
-- `sudo` access
-- And up and running Kubernetes cluster, and related KUBECONFIG file (see [Light speed Kubernetes installation](https://github.com/k8s-school/kind-helper/blob/master/README.md))
-- Install dependencies below:
-```shell
-sudo apt-get install curl docker.io
+* Create a Github repository for a given application, for example: https://github.com/<GITHUB_ACCOUNT>/<GITHUB_REPOSITORY>
 
-# then add current user to docker group and restart desktop session
-sudo usermod -a -G docker <USER>
+### Setup
+
+Enable Github Action by creating file `.github/workflow/itests.yaml`, based on template below:
+```
+name: "Integration tests"
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  itests:
+    name: Run integration tests on Kubernetes
+    runs-on: ubuntu-22.04
+    needs: build
+    env:
+      GHA_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create k8s/kind cluster
+        run: |
+	  VERSION="v1.0.1"
+          curl -sfL https://raw.githubusercontent.com/k8s-school/kind-helper/$VERSION/install.sh | bash
+          kind-helper create -s
+
+     - run: |
+          kubectl get nodes
+          # Add scripts which deploy and tests application on Kubernetes
+
 ```
 
-### Launch
-```shell
-# Create work directory
-WORKDIR=$HOME/k8s
-mkdir -p $WORKDIR
-cd $WORKDIR
-curl -lO https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/toolbox.sh
-chmod +x toolbox.sh
-./toolbox.sh
-# If you have a valid KUBECONFIG file on your host, inside $HOME/.kube/config, command below will work fine:
-kubectl get nodes
-```
-`toolbox` launch open a shell inside a Docker container.
 
-**NOTE**: `toolbox` container `home` folder mount `$WORKDIR/homefs` host directory.
-
-## How-to
-
-- On the host machine, launch an editor or IDE and add Kubernetes applications code and scripts to `homefs` directory.
-- Inside the `k8s-toolbox` container, directly run code and scripts.
-
-## Google Cloud setup
-
-### Pre-requisites
-
-gmail account for regular users must have IAM roles below:
-```
-Compute OS Admin Login
-Compute OS Login
-Kubernetes Engine Developer
-Service Account User
-```
-See https://cloud.google.com/compute/docs/instances/managing-instance-access#configure_users for additional informations.
-
-### Initialize gcloud project
-
-```
-# or simply run gcloud-setup.sh
-cp /opt/gcp/env-gcp.example.sh $HOME/env-gcp.sh
-# Customize $HOME/env-gcp.sh
-. $HOME/env-gcp.sh
-gcloud auth login
-gcloud config set project $PROJECT
-```
-
-### Connect to instances
-
-``` shell
-# WARNING: use empty password for ssh key!
-# ssh is an alias for  `gcloud compute ssh`
-# Replace <X> with your user ID
-ssh clus<X>-0
-
-# Set the zone if needed
-gcloud compute instances list
-NAME     ZONE          MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
-clus0-0  asia-east1-c  n1-standard-2               10.140.0.59  35.221.224.110  RUNNING
-clus0-1  asia-east1-c  n1-standard-2               10.140.0.57  35.221.200.235  RUNNING
-clus0-2  asia-east1-c  n1-standard-2               10.140.0.58  35.185.155.134  RUNNING
-
-gcloud config set compute/zone <ZONE>
-```
-
-### Follow Kubernetes install documentation 
-
-[Official Kubernetes installation documentation with kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/)
-[Simple Kubernetes installation procedure with kubeadm](https://www.k8s-school.fr/resources/en/blog/kubeadm/)
+[kind]:https://github.com/kubernetes-sigs/kind
 
 
+## Additional resource
+
+* [Blog post: running Kubernetes in the ci pipeline](https://www.loodse.com/blog/2019-03-12-running-kubernetes-in-the-ci-pipeline-/)

@@ -1,0 +1,41 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+{{- if .PrivateRegistry }}
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ .PrivateRegistry }}".tls]
+     insecure_skip_verify = true
+{{- end }}
+{{- if .UseCalico }}
+networking:
+  disableDefaultCNI: true # disable kindnet
+  podSubnet: "192.168.0.0/16"
+{{- end }}
+kubeadmConfigPatches:
+- |
+  apiVersion: kubeadm.k8s.io/v1beta2
+  kind: ClusterConfiguration
+  metadata:
+    name: config
+  apiServer:
+    extraArgs:
+      enable-admission-plugins: NodeRestriction,ResourceQuota
+	{{- if .LocalCertSANs }}
+    certSANs:
+      - "127.0.0.1"
+	{{- end }}
+nodes:
+- role: control-plane
+  extraMounts:
+  {{- if .ExtraMountPath }}
+  - hostPath: {{ .ExtraMountPath }}
+    containerPath: /mnt/extra
+  {{- end }}
+{{- range $val := Iterate .Workers }}
+- role: worker
+  extraMounts:
+  {{- if $.ExtraMountPath }}
+  - hostPath: {{ $.ExtraMountPath }}
+    containerPath: /mnt/extra
+  {{- end }}
+{{- end }}

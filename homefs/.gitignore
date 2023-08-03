@@ -1,6 +1,0 @@
-/env-gcp.sh
-/.*
-!/.gitignore
-!/.bashrc
-!/.examples
-/*
