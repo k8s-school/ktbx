@@ -74,7 +74,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "configuration file (default to $HOME/.k8s-toolbox.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "configuration file (default to $CWD/.k8s-toolbox then $HOME/.k8s-toolbox)")
 
 	rootCmd.PersistentFlags().BoolP("single", "s", false, "create a single node k8s cluster, take precedence over configuration file 'workers' parameter")
 	rootCmd.PersistentFlags().BoolP("calico", "c", false, "install calico CNI, take precedence over configuration file 'usecalico' parameter")

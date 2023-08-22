@@ -3,6 +3,7 @@ apiVersion: kind.x-k8s.io/v1alpha4
 {{- if .PrivateRegistry }}
 containerdConfigPatches:
 - |-
+  # FIXME deprecated replace with https://github.com/kubernetes-sigs/kind/issues/3310#issuecomment-1641515799
   [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ .PrivateRegistry }}".tls]
      insecure_skip_verify = true
 {{- end }}
