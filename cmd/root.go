@@ -33,8 +33,8 @@ var cfgFile string
 var dryRun bool
 
 var (
-	logger   *zap.SugaredLogger
-	logLevel int
+	logger    *zap.SugaredLogger
+	verbosity int
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -68,6 +68,7 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.PersistentFlags().IntVarP(&verbosity, "verbosity", "v", 0, "Verbosity level (-v0 for minimal, -v2 for maximum)")
 	cobra.OnInitialize(initLogger, initConfig)
 
 	// Here you will define your flags and configuration settings.
@@ -93,8 +94,17 @@ func initLogger() {
 
 	outputPath := fmt.Sprintf("/tmp/k8s-toolbox-%s.log", user.Username)
 
+	var loglevelStr string
+	if verbosity == 0 {
+		loglevelStr = "error"
+	} else if verbosity == 1 {
+		loglevelStr = "info"
+	} else {
+		loglevelStr = "debug"
+	}
+
 	rawJSON := []byte(`{
-		"level": "debug",
+		"level": "` + loglevelStr + `",
 		"encoding": "console",
 		"outputPaths": ["stdout", "` + outputPath + `"],
 		"errorOutputPaths": ["stderr"],

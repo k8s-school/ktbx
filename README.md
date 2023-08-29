@@ -17,8 +17,8 @@ Support kind v0.10.0 and k8s v1.20
 
 ```shell
 # Sudo access is required here
-VERSION="v1.0.1-rc1"
-curl -sfL https://raw.githubusercontent.com/k8s-school/k8s-toolbox/$VERSION/install.sh | bash
+K8S_TOOLBOX_VERSION="v1.0.1-rc1"
+curl -sfL https://raw.githubusercontent.com/k8s-school/k8s-toolbox/$K8S_TOOLBOX_VERSION/install.sh | bash
 
 # Run a single node k8s cluster with kind
 k8s-toolbox create -s
