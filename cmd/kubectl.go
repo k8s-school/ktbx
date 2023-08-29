@@ -11,19 +11,19 @@ import (
 )
 
 // helmCmd represents the helm command
-var helmCmd = &cobra.Command{
+var kubectlCmd = &cobra.Command{
 	Use:   "helm",
 	Short: "Install Helm on the client machine",
 	Long:  `Install Helm on the client machine. Sudo access is required to install components on the client machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Install helm")
+		fmt.Println("Install kubectl")
 
-		ExecCmd(resources.HelmInstallScript)
+		ExecCmd(resources.KubectlInstallScript)
 	},
 }
 
 func init() {
-	installCmd.AddCommand(helmCmd)
+	installCmd.AddCommand(kubectlCmd)
 
 	// Here you will define your flags and configuration settings.
 

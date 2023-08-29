@@ -15,3 +15,6 @@ var KindConfigTemplate string
 
 //go:embed helm-install.sh
 var HelmInstallScript string
+
+//go:embed kubectl-install.sh
+var KubectlInstallScript string

@@ -24,7 +24,6 @@ waitfor() {
   eval "$xtrace"
 }
 
-
 echo "HACK: set PodPolicy to baseline for namespace olm"
 echo "Watch issue https://github.com/argoproj-labs/argocd-operator/issues/945"
 kubectl patch namespaces olm --type='json' -p='[{"op": "replace", "path": "/metadata/labels/pod-security.kubernetes.io~1enforce", "value":"baseline"}]'
