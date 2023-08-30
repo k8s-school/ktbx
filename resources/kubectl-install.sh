@@ -13,6 +13,13 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 KUBECTL_VERSION="1.25.0"
 KUBECTL_BIN="/usr/local/bin/kubectl"
 
+OS="$(uname -s)"
+test "$OS" = "Linux" && OS="linux"
+
+ARCH="$(uname -m)"
+test "$ARCH" = "aarch64" && ARCH="arm64"
+test "$ARCH" = "x86_64" && ARCH="amd64"
+
 # Download kubectl, which is a requirement for using kind.
 # TODO If kubectl exists, compare current version to desired one: kubectl version --client --short  | awk '{print $3}'
 if [ ! -e $KUBECTL_BIN ]; then
