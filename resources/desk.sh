@@ -64,7 +64,7 @@ then
     HOMEFS="$HOME/.k8s-toolbox/homefs"
     mkdir -p "$HOMEFS"
     if [ ! -e "$HOMEFS"/.bashrc ]; then
-        curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/main/homefs/.bashrc > "$HOMEFS"/.bashrc
+        curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/main/_desk/homefs/.bashrc > "$HOMEFS"/.bashrc
     fi
 fi
 

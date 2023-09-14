@@ -16,7 +16,7 @@ var argocdCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Info("Install ArgoCD")
 
-		ExecCmd(resources.ArgoCDInstallScript)
+		ExecCmd(resources.ArgoCDInstallScript, false)
 	},
 }
 

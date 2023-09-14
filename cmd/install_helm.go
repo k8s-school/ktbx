@@ -18,7 +18,7 @@ var helmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install helm")
 
-		ExecCmd(resources.HelmInstallScript)
+		ExecCmd(resources.HelmInstallScript, false)
 	},
 }
 

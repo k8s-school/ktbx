@@ -18,7 +18,7 @@ var kubectlCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install kubectl")
 
-		ExecCmd(resources.KubectlInstallScript)
+		ExecCmd(resources.KubectlInstallScript, false)
 	},
 }
 

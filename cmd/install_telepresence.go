@@ -17,7 +17,7 @@ var telepresenceCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install telepresence")
 
-		ExecCmd(resources.TelepresenceInstallScript)
+		ExecCmd(resources.TelepresenceInstallScript, false)
 	},
 }
 

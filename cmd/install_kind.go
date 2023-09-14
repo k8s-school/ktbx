@@ -18,7 +18,7 @@ var kindCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install kubectl")
 
-		ExecCmd(resources.KindInstallScript)
+		ExecCmd(resources.KindInstallScript, false)
 	},
 }
 

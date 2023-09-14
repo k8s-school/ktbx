@@ -18,7 +18,7 @@ var deskCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Launch interactive desk")
 
-		ExecCmd(resources.DeskRunScript)
+		ExecCmd(resources.DeskRunScript, true)
 	},
 }
 

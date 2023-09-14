@@ -15,7 +15,7 @@ func deleteCluster() {
 
 	cmd := fmt.Sprintf(cmd_tpl, "kind")
 
-	ExecCmd(cmd)
+	ExecCmd(cmd, false)
 
 }
 

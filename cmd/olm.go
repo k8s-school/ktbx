@@ -16,7 +16,7 @@ var olmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		logger.Info("Instal OLM")
 
-		ExecCmd(resources.OlmInstallScript)
+		ExecCmd(resources.OlmInstallScript, false)
 	},
 }
 
