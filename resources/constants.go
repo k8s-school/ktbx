@@ -10,6 +10,9 @@ var OlmInstallScript string
 //go:embed install-argocd.sh
 var ArgoCDInstallScript string
 
+//go:embed desk.sh
+var DeskRunScript string
+
 //go:embed kind-config.yaml
 var KindConfigTemplate string
 

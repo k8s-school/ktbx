@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"os/exec"
 )
@@ -15,9 +14,11 @@ func ExecCmd(command string) (string, string) {
 	if !dryRun {
 		logger.Infof("Launch command: %v", command)
 		cmd := exec.Command(ShellToUse, "-c", command)
-
-		cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
-		cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		//cmd.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
+		//cmd.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
 
 		err := cmd.Run()
 		if err != nil {

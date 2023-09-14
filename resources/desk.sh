@@ -61,10 +61,10 @@ fi
 # Create home directory
 if [ -z "${HOMEFS}" ]
 then
-    HOMEFS="$DIR/homefs"
+    HOMEFS="$HOME/.k8s-toolbox/homefs"
     mkdir -p "$HOMEFS"
     if [ ! -e "$HOMEFS"/.bashrc ]; then
-        curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/master/homefs/.bashrc > "$HOMEFS"/.bashrc
+        curl https://raw.githubusercontent.com/k8s-school/k8s-toolbox/main/homefs/.bashrc > "$HOMEFS"/.bashrc
     fi
 fi
 
@@ -84,7 +84,7 @@ MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-ce
 
 docker pull "$IMAGE"
 echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
-echo "   Welcome in k8s toolbox container"
+echo "   Welcome in k8s toolbox desk"
 echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
 docker run $BASH_OPTS --net=host \
     $MOUNTS --rm \
