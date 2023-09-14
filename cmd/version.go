@@ -19,9 +19,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
-
 	"runtime/debug"
+
+	"github.com/spf13/cobra"
 )
 
 func init() {
@@ -47,7 +47,7 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-// Version returns the version of finkctl and its checksum.
+// Version returns the version of k8s-toolbox and its checksum.
 func Version() (version, sum string) {
 	b, ok := debug.ReadBuildInfo()
 	if !ok {

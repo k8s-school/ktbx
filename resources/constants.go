@@ -4,20 +4,23 @@ import (
 	_ "embed"
 )
 
-//go:embed olm-install.sh
+//go:embed install-olm.sh
 var OlmInstallScript string
 
-//go:embed argocd-install.sh
+//go:embed install-argocd.sh
 var ArgoCDInstallScript string
 
 //go:embed kind-config.yaml
 var KindConfigTemplate string
 
-//go:embed helm-install.sh
+//go:embed install-helm.sh
 var HelmInstallScript string
 
-//go:embed kind-install.sh
+//go:embed install-kind.sh
 var KindInstallScript string
 
-//go:embed kubectl-install.sh
+//go:embed install-kubectl.sh
 var KubectlInstallScript string
+
+//go:embed install-telepresence.sh
+var TelepresenceInstallScript string
