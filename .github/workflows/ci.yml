@@ -7,30 +7,31 @@ on:
     branches:
       - master
 jobs:
-  main:
-    name: Validate k8s install
+  build_image:
+    name: Build k8s-toolbox desk 
     runs-on: ubuntu-20.04
     steps:
-      - name: Uninstall go provided by Ubuntu
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build image
         run: |
-          sudo apt-get remove golang-go
-          sudo apt-get remove --auto-remove golang-go
-          sudo apt-get purge golang-go
+          ./_desk/build-image.sh
+  install_k8s:
+    name: Install k8s and run tests
+    runs-on: ubuntu-20.04
+    steps:
       - uses: actions/setup-go@v3
         with:
           go-version: '^1.20.3'
       - run: go version
-      - name: Install go dependencies
-        run: |
-          go install golang.org/x/tools/cmd/goimports@latest
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build kind-helper
+      - name: Build and install k8s-toolbox
         run: |
-          go build .
+          go install .
       - name: Install k8s using kind
         run: |
-          ./kind-helper create -s
+          k8s-toolbox create -s
           kubectl get pods -n kube-system
           kubectl get nodes
       - name: Run tests

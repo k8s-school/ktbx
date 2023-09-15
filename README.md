@@ -1,5 +1,16 @@
 [<img src="http://k8s-school.fr/images/logo.svg" alt="K8s-school Logo, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
 
+
+
+ _    ___            _              _ _
+| | _( _ ) ___      | |_ ___   ___ | | |__   _____  __
+| |/ / _ \/ __|_____| __/ _ \ / _ \| | '_ \ / _ \ \/ /
+|   < (_) \__ \_____| || (_) | (_) | | |_) | (_) >  <
+|_|\_\___/|___/      \__\___/ \___/|_|_.__/ \___/_/\_\
+
+
+
+
 # k8s-toolbox
 
 Helper to install Kubernetes clusters, based on [kind], on any Linux system. Allow to easily setup:
@@ -17,7 +28,7 @@ Support kind v0.10.0 and k8s v1.20
 
 ```shell
 # Sudo access is required here
-K8S_TOOLBOX_VERSION="v1.0.1-rc1"
+K8S_TOOLBOX_VERSION="v1.0.0-rc1"
 curl -sfL https://raw.githubusercontent.com/k8s-school/k8s-toolbox/$K8S_TOOLBOX_VERSION/install.sh | bash
 
 # Run a single node k8s cluster with kind
@@ -32,6 +43,29 @@ k8s-toolbox create -c
 # Delete the kind cluster
 k8s-toolbox delete
 
+```
+
+# Enabling k8s-toolbox auto-completion
+
+## Example for bash on Linux
+
+```shell
+# install bash-completion
+sudo apt-get install bash-completion
+
+# Add the completion script to your .bashrc file
+echo 'source <(k8s-toolbox completion bash)' >>~/.bashrc
+
+# Apply changes
+source ~/.bashrc
+```
+
+If you have an alias for `k8s-toolbox`, you can extend your shell's completion to work with this alias:
+
+```shell
+echo 'alias k8x=k8s-toolbox' >>~/.bashrc
+
+echo 'complete -o default -F __start_k8s-toolbox k8x' >>~/.bashrc
 ```
 
 ## Run kind inside Github Actions
