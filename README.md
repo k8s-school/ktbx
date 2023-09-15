@@ -70,9 +70,6 @@ echo 'complete -o default -F __start_k8s-toolbox k8x' >>~/.bashrc
 
 ## Run kind inside Github Actions
 
-
-Check this **[tutorial: build a Kubernetes CI with Kind](https://k8s-school.fr/resources/en/blog/k8s-ci/)** in order to learn how to run [kind](https://github.com/kubernetes-sigs/kind) inside [Travis-CI](https://travis-ci.org/k8s-school/k8s-toolbox).
-
 ### Pre-requisites
 
 * Create a Github repository for a given application, for example: https://github.com/<GITHUB_ACCOUNT>/<GITHUB_REPOSITORY>
@@ -81,37 +78,34 @@ Check this **[tutorial: build a Kubernetes CI with Kind](https://k8s-school.fr/r
 
 Enable Github Action by creating file `.github/workflow/itests.yaml`, based on template below:
 ```
-name: "Integration tests"
+name: "Install k8s cluster"
 on:
   push:
   pull_request:
     branches:
-      - main
-  itests:
-    name: Run integration tests on Kubernetes
+      - master
+
+jobs:
+  k8s-install:
+    name: Install k8s
     runs-on: ubuntu-22.04
-    needs: build
-    env:
-      GHA_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.20.3'
       - name: Create k8s/kind cluster
         run: |
-	  VERSION="v1.0.1"
-          curl -sfL https://raw.githubusercontent.com/k8s-school/k8s-toolbox/$VERSION/install.sh | bash
+          go install github.com/k8s-school/k8s-toolbox@main
           k8s-toolbox create -s
-
-     - run: |
-          kubectl get nodes
-          # Add scripts which deploy and tests application on Kubernetes
-
+          k8s-toolbox install kubectl
+      - name: Install and test application
+        run: |
+          kubectl create deployment my-nginx --image=nginx
+          kubectl expose deployment my-nginx --port=80
 ```
 
-
 [kind]:https://github.com/kubernetes-sigs/kind
-
-
-## Additional resource
-
-* [Blog post: running Kubernetes in the ci pipeline](https://www.loodse.com/blog/2019-03-12-running-kubernetes-in-the-ci-pipeline-/)
