@@ -8,7 +8,7 @@ on:
       - master
 jobs:
   build_image:
-    name: Build k8s-toolbox desk 
+    name: Build k8s-toolbox desk
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -34,6 +34,9 @@ jobs:
           k8s-toolbox create -s
           kubectl get pods -n kube-system
           kubectl get nodes
-      - name: Run tests
+      - name: Start nginx
         run: |
-          ./tests/launch.sh
+          ./run-nginx.sh
+      - name: Test nginx
+        run: |
+          ./test-nginx.sh

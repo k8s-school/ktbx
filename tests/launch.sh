@@ -11,7 +11,7 @@ echo "Pods are up:"
 kubectl get pods
 
 # Launch application integration test here
-"$DIR"/test.sh
+"$DIR"/run-nginx.sh
 
 # TODO Add strong check for startup
 sleep 10
