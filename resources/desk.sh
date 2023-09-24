@@ -2,7 +2,6 @@
 # @author  Fabrice Jammes
 
 set -euo pipefail
-# set -x
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
@@ -43,7 +42,7 @@ $MOUNTS --rm \
 -w $HOME -- \
 \"$IMAGE\""
 else
-    docker pull "$IMAGE"
+    docker pull -q "$IMAGE"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
     echo "   Welcome in k8s toolbox desk"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
@@ -53,4 +52,3 @@ else
         -w $HOME -- \
         "$IMAGE" $CMD
 fi
-
