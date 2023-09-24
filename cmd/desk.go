@@ -10,28 +10,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var showDockerCmd bool
+
 // deskCmd represents the desk command
 var deskCmd = &cobra.Command{
 	Use:   "desk",
 	Short: "Lauch a interactive shell with k8s client tools installed",
 	Long:  `Lauch a interactive shell with k8s client tools installed, inside a docker container, it mounts host directories $HOME/.kube in $HOME/.kube and homefs/ in $HOME`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Launch interactive desk")
 
-		ExecCmd(resources.DeskRunScript, true)
+		if showDockerCmd {
+			// TODO escape ' in command
+			script := "SHOWDOCKERCMD=true\n" + resources.DeskRunScript
+			ExecCmd(script, false)
+		} else {
+			fmt.Println("Launch interactive desk")
+			ExecCmd(resources.DeskRunScript, true)
+		}
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deskCmd)
 
-	// Here you will define your flags and configuration settings.
+	deskCmd.PersistentFlags().BoolVar(&showDockerCmd, "show", false, "Print docker command")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// deskCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// deskCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

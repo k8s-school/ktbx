@@ -157,7 +157,7 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		viper.SetConfigName(".k8s-toolbox")
+		viper.SetConfigName(".k8s-toolbox/config")
 	}
 
 	// If a config file is found, read it in.
