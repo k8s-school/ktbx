@@ -14,9 +14,10 @@ var showDockerCmd bool
 
 // deskCmd represents the desk command
 var deskCmd = &cobra.Command{
-	Use:   "desk",
-	Short: "Lauch a interactive shell with k8s client tools installed",
-	Long:  `Lauch a interactive shell with k8s client tools installed, inside a docker container, it mounts host directories $HOME/.kube in $HOME/.kube and homefs/ in $HOME`,
+	Use:     "desk",
+	Aliases: []string{"d"},
+	Short:   "Lauch a interactive shell with k8s client tools installed",
+	Long:    `Lauch a interactive shell with k8s client tools installed, inside a docker container, it mounts host directories $HOME/.kube in $HOME/.kube and homefs/ in $HOME`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		if showDockerCmd {
@@ -34,6 +35,6 @@ var deskCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(deskCmd)
 
-	deskCmd.PersistentFlags().BoolVar(&showDockerCmd, "show", false, "Print docker command")
+	deskCmd.PersistentFlags().BoolVar(&showDockerCmd, "dry-run", false, "Print docker command")
 
 }

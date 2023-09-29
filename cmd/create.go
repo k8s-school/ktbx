@@ -6,6 +6,8 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
+	"os/exec"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
@@ -15,13 +17,22 @@ import (
 )
 
 func createCluster() {
+	_, err := exec.LookPath(kind_bin)
+	if err != nil {
+		log.Fatalf("'%v' not found in PATH", kind_bin)
+	}
 
 	c := getK8sToolboxConfig()
 	logConfiguration()
 	generateKindConfigFile(c)
 
-	cmd_tpl := "kind create cluster --config %v"
-	cmd := fmt.Sprintf(cmd_tpl, kindConfigFile)
+	optName := ""
+	if clusterName != "" {
+		optName = " --name" + clusterName
+	}
+
+	cmd_tpl := "%v create cluster --config %v%v"
+	cmd := fmt.Sprintf(cmd_tpl, kind_bin, kindConfigFile, optName)
 
 	ExecCmd(cmd, false)
 

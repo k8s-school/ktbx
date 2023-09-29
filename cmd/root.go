@@ -33,8 +33,9 @@ var cfgFile string
 var dryRun bool
 
 var (
-	logger    *zap.SugaredLogger
-	verbosity int
+	logger      *zap.SugaredLogger
+	verbosity   int
+	clusterName string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -76,6 +77,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "configuration file (default to $CWD/.k8s-toolbox then $HOME/.k8s-toolbox)")
+	rootCmd.PersistentFlags().StringVar(&clusterName, "name", "", "cluster name, default to 'kind'")
 
 	rootCmd.PersistentFlags().BoolP("single", "s", false, "create a single node k8s cluster, take precedence over configuration file 'workers' parameter")
 	rootCmd.PersistentFlags().BoolP("calico", "c", false, "install calico CNI, take precedence over configuration file 'usecalico' parameter")

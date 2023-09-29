@@ -8,6 +8,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const kind_bin = "kind"
+
 func logConfiguration() {
 	c := viper.AllSettings()
 	bs, err := yaml.Marshal(c)
