@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/k8s-school/k8s-toolbox/resources"
+	"github.com/k8s-school/k8s-toolbox/ktbx/resources"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

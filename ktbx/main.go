@@ -16,7 +16,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 package main
 
-import "./cmd"
+import "github.com/k8s-school/k8s-toolbox/ktbx/cmd"
 
 func main() {
 	cmd.Execute()

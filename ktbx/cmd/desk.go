@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/k8s-school/k8s-toolbox/resources"
+	"github.com/k8s-school/k8s-toolbox/ktbx/resources"
 	"github.com/spf13/cobra"
 )
 
