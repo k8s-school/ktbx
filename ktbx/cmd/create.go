@@ -4,16 +4,11 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os/exec"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/spf13/cobra"
-
-	"github.com/docker/docker/client"
 )
 
 func createCluster() {
@@ -60,44 +55,6 @@ var createCmd = &cobra.Command{
 		// Write golang code to create a file inside a docker container using the ContainerExec operation of the docker API
 
 	},
-}
-
-func createFileInContainer(cli *client.Client, containerID, filePath string, content []byte) error {
-
-	cli, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		panic(err)
-	}
-
-	filter := types.ContainerListOptions{
-		Filters: filters.NewArgs(
-			filters.Arg("name", "kind*"),
-		),
-	}
-
-	containers, err := cli.ContainerList(context.Background(), filter)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, c := range containers {
-		writeCloser, err := cli.ContainerExecAttach(context.Background(), c.ID, types.ExecStartCheck{
-			Tty: true,
-		})
-		if err != nil {
-			return err
-		}
-		defer writeCloser.Close()
-
-		_, err = writeCloser.Conn.Write(content)
-		if err != nil {
-			return err
-		}
-
-		writeCloser.CloseWrite()
-	}
-
-	return nil
 }
 
 func init() {

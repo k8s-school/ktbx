@@ -14,7 +14,7 @@ var olmCmd = &cobra.Command{
 	Short: "Install OLM",
 	Long:  `Install Operator Lifecycle Manager (OLM)`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("Instal OLM")
+		logger.Info("Install OLM")
 
 		ExecCmd(resources.OlmInstallScript, false)
 	},
