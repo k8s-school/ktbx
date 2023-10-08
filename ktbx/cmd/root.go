@@ -40,19 +40,19 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "k8s-toolbox",
+	Use:   "ktbx",
 	Short: "A high-level cli on top of kind",
 	Long: `Creates kind-based Kubernetes cluster
 
 Examples:
   # Create a configuration file for kind
-  ./k8s-toolbox configgen
+  ktbx configgen
 
   # Create a single-node cluster using calico CNI
-  ./k8s-toolbox create --single --calico
+  ktbx create --single --calico
 
   # Delete kind cluster
-  ./k8s-toolbox delete
+  ktbx delete
 `,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:

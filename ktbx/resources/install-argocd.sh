@@ -23,3 +23,9 @@ metadata:
 spec: {}
 EOF
 kubectl apply -f /tmp/argocd.yaml
+
+VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+echo "Install ArgoCD CLI $VERSION"
+curl -sSL -o /tmp/argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
+rm /tmp/argocd-linux-amd64
