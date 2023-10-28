@@ -6,6 +6,8 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/k8s-school/k8s-toolbox/ktbx/internal"
+	"github.com/k8s-school/k8s-toolbox/ktbx/log"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +20,7 @@ func deleteCluster() {
 
 	cmd_tpl := "%v delete cluster%v"
 
-	cmd := fmt.Sprintf(cmd_tpl, kind_bin, optName)
+	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, optName)
 
 	ExecCmd(cmd, false)
 
@@ -29,7 +31,7 @@ var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete a kind cluster",
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("Delete %v cluster")
+		log.Infof("Delete %v cluster")
 		deleteCluster()
 	},
 }

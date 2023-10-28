@@ -1,5 +1,10 @@
-* TODO name k8stux, knuf, k8s6, k8ctl, k8sdelictl, kool8s, k8stack
+* TODO Mount /tmp inside desk
+* TODO add unit/CI tests
+* TODO Add option for audit logs:
+https://kind.sigs.k8s.io/docs/user/auditing/
+* DONE name k8stux, knuf, k8s6, k8ctl, k8sdelictl, kool8s, k8stack
 * TODO monitor https://github.com/kubernetes-sigs/kind/issues/3310
+* TODO monitor https://github.com/spf13/viper/issues/368
 * TODO Add DEBUG info
 # TODO add it as a k8s-toolbox option
 env

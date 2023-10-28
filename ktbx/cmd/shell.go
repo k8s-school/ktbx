@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"os/exec"
+
+	"github.com/k8s-school/k8s-toolbox/ktbx/log"
 )
 
 const ShellToUse = "bash"
@@ -13,7 +15,7 @@ func ExecCmd(command string, interactive bool) (string, string) {
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if !dryRun {
-		logger.Infof("Launch command: %v", command)
+		log.Infof("Launch command: %v", command)
 		cmd := exec.Command(ShellToUse, "-c", command)
 		if interactive {
 			cmd.Stdin = os.Stdin
@@ -25,13 +27,13 @@ func ExecCmd(command string, interactive bool) (string, string) {
 		}
 		err := cmd.Run()
 		if err != nil {
-			logger.Fatalf("cmd.Run() failed with %s\n", err)
+			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 		// logger.Infof("stdout %v", stdoutBuf)
 		// logger.Infof("stderr %v", stderrBuf)
 
 	} else {
-		logger.Infof("Dry run %s", command)
+		log.Infof("Dry run %s", command)
 	}
 	return stdoutBuf.String(), stderrBuf.String()
 }

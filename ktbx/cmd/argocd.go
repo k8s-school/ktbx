@@ -4,6 +4,7 @@ Copyright © 2023 Fabrice Jammes fabrice.jammes@k8s-school.fr
 package cmd
 
 import (
+	"github.com/k8s-school/k8s-toolbox/ktbx/log"
 	"github.com/k8s-school/k8s-toolbox/ktbx/resources"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +15,7 @@ var argocdCmd = &cobra.Command{
 	Short: "Install ArgoCD",
 	Long:  `Install ArgoCD operator using OLM`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger.Info("Install ArgoCD")
+		log.Infof("Install ArgoCD")
 
 		ExecCmd(resources.ArgoCDInstallScript, false)
 	},

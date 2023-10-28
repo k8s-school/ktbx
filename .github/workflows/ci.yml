@@ -1,6 +1,5 @@
-# Qserv operator CI workflow
 ---
-name: "CI"
+name: "Integration tests"
 on:
   push:
   pull_request:
@@ -28,10 +27,12 @@ jobs:
         uses: actions/checkout@v2
       - name: Build and install k8s-toolbox
         run: |
+          cd ktbx
           go install .
       - name: Install k8s using kind
         run: |
-          k8s-toolbox create -s
+          ktbx install kind
+          ktbx create --single --calico
           kubectl get pods -n kube-system
           kubectl get nodes
       - name: Start nginx
