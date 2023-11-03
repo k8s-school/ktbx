@@ -15,7 +15,7 @@ IMAGE="k8sschool/k8s-toolbox:latest"
 echo $DIR
 
 # CACHE_OPT="--no-cache"
-docker build --target base --tag "$IMAGE_LITE" "$DIR"
+docker image build --no-cache --target base --tag "$IMAGE_LITE" "$DIR"
 docker image build --build-arg FORCE_GO_REBUILD="$(date)" --tag "$IMAGE" "$DIR"
 docker push "$IMAGE_LITE"
 docker push "$IMAGE"
