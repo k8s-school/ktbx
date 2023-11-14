@@ -4,8 +4,8 @@ Copyright © 2023 Fabrice Jammes fabrice.jammes@k8s-school.fr
 package cmd
 
 import (
-	"github.com/k8s-school/k8s-toolbox/ktbx/log"
-	"github.com/k8s-school/k8s-toolbox/ktbx/resources"
+	"github.com/k8s-school/ktbx/log"
+	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
 )
 

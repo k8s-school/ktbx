@@ -6,8 +6,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/k8s-school/k8s-toolbox/ktbx/internal"
-	"github.com/k8s-school/k8s-toolbox/ktbx/log"
+	"github.com/k8s-school/ktbx/internal"
+	"github.com/k8s-school/ktbx/log"
 	"github.com/spf13/cobra"
 )
 

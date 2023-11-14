@@ -10,7 +10,7 @@ import (
 	"text/template"
 
 	"github.com/k8s-school/ciux/log"
-	"github.com/k8s-school/k8s-toolbox/ktbx/resources"
+	"github.com/k8s-school/ktbx/resources"
 	defaults "github.com/mcuadros/go-defaults"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"

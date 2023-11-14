@@ -6,7 +6,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/k8s-school/k8s-toolbox/ktbx/log"
+	"github.com/k8s-school/ktbx/log"
 )
 
 const ShellToUse = "bash"

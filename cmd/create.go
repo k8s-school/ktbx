@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/k8s-school/k8s-toolbox/ktbx/internal"
-	"github.com/k8s-school/k8s-toolbox/ktbx/log"
+	"github.com/k8s-school/ktbx/internal"
+	"github.com/k8s-school/ktbx/log"
 )
 
 // createCmd represents the create command

@@ -19,7 +19,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/k8s-school/k8s-toolbox/ktbx/log"
+	"github.com/k8s-school/ktbx/log"
 	"github.com/spf13/cobra"
 )
 
