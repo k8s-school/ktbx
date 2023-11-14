@@ -37,7 +37,7 @@ jobs:
           kubectl get nodes
       - name: Start nginx
         run: |
-          ./ktbx/itest/run-nginx.sh
+          ./itest/run-nginx.sh
       - name: Test nginx
         run: |
-          ./ktbx/itest/test-nginx.sh
+          ./itest/test-nginx.sh
