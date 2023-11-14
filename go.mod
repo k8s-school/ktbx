@@ -1,4 +1,4 @@
-module github.com/k8s-school/k8s-toolbox
+module github.com/k8s-school/ktbx
 
 go 1.19
 
