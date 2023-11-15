@@ -1,0 +1,98 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 4.32kB done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/debian:bookworm
+#3 DONE 0.7s
+
+#4 [base  1/13] FROM docker.io/library/debian:bookworm@sha256:fab22df37377621693c68650b06680c0d8f7c6bf816ec92637944778db3ca2c0
+#4 DONE 0.0s
+
+#5 [base  8/13] RUN "/tmp/argoproj-helper"/argo-client-install.sh
+#5 CACHED
+
+#6 [base 10/13] RUN wget -O /tmp/kustomize.tgz     https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.8.4/kustomize_v3.8.4_linux_amd64.tar.gz &&     tar zxvf /tmp/kustomize.tgz &&     rm /tmp/kustomize.tgz &&     chmod +x kustomize &&     mv kustomize /usr/local/bin/kustomize
+#6 CACHED
+
+#7 [base 11/13] RUN wget -O /tmp/stern.tgz     https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz &&     tar zxvf /tmp/stern.tgz &&     rm /tmp/stern.tgz &&     chmod +x stern &&     mv stern /usr/local/bin/stern
+#7 CACHED
+
+#8 [base  2/13] RUN apt-get -y update &&     apt-get -y install apt-utils &&     apt-get -y upgrade &&     apt-get -y clean
+#8 CACHED
+
+#9 [base 13/13] RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases
+#9 CACHED
+
+#10 [base  9/13] RUN wget -O /usr/local/bin/kubectl     https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl &&     chmod +x /usr/local/bin/kubectl
+#10 CACHED
+
+#11 [full 1/9] RUN echo "Build full k8s-toolbox"
+#11 CACHED
+
+#12 [base  5/13] RUN locale-gen
+#12 CACHED
+
+#13 [full 4/9] RUN wget -q --show-progress --https-only --timestamping     https://pkg.cfssl.org/R1.2/cfssl_linux-amd64     https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 &&     chmod o+x cfssl_linux-amd64 cfssljson_linux-amd64 &&     mv cfssl_linux-amd64 /usr/local/bin/cfssl &&     mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+#13 CACHED
+
+#14 [full 2/9] RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin -y
+#14 CACHED
+
+#15 [base 12/13] RUN wget https://dl.google.com/go/go1.19.5.linux-amd64.tar.gz &&     tar -xvf go1.19.5.linux-amd64.tar.gz &&     mv go /usr/local
+#15 CACHED
+
+#16 [base  4/13] RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
+#16 CACHED
+
+#17 [base  7/13] RUN git clone --depth 1 -b "v3.4.4" --single-branch https://github.com/k8s-school/argoproj-helper.git "/tmp/argoproj-helper"
+#17 CACHED
+
+#18 [base  3/13] RUN apt-get -y update &&     apt-get -y install curl bash-completion git gnupg jq     kubectx lsb-release locales make     nano openssh-client parallel     unzip vim wget zsh     apt-transport-https ca-certificates gnupg
+#18 CACHED
+
+#19 [full 3/9] RUN wget https://github.com/garethr/kubeval/releases/download/0.15.0/kubeval-linux-amd64.tar.gz &&     tar xf kubeval-linux-amd64.tar.gz &&     mv kubeval /usr/local/bin &&     rm kubeval-linux-amd64.tar.gz
+#19 CACHED
+
+#20 [base  6/13] RUN curl -sL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash -s -- --version "v3.10.3"
+#20 CACHED
+
+#21 [full 5/9] RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz"   && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz -C "/tmp"   && chmod +x "/tmp/k9s"   && mv "/tmp/k9s" "/usr/local/bin/k9s"
+#21 CACHED
+
+#22 [internal] load build context
+#22 transferring context: 618B done
+#22 DONE 0.0s
+
+#23 [full 6/9] RUN /usr/local/go/bin/go install -v github.com/k8s-school/clouder@latest
+#23 0.932 go: downloading github.com/k8s-school/clouder v0.0.0-20231115223048-4651a1bf8767
+#23 1.134 github.com/k8s-school/clouder
+#23 DONE 1.3s
+
+#24 [full 7/9] RUN ls -rtl /go/bin
+#24 0.362 total 2264
+#24 0.362 -rwxr-xr-x 1 root root 2314785 Nov 15 22:43 clouder
+#24 DONE 0.4s
+
+#25 [full 8/9] RUN curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash
+#25 0.320   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#25 0.320                                  Dload  Upload   Total   Spent    Left  Speed
+#25 0.320   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  9446  100  9446    0     0  22007      0 --:--:-- --:--:-- --:--:-- 21967
+#25 0.789 alcideio/rbac-tool info checking GitHub for latest tag
+#25 1.541 alcideio/rbac-tool info found version: 1.14.5 for v1.14.5/linux/amd64
+#25 4.663 alcideio/rbac-tool info installed ./bin/rbac-tool
+#25 DONE 4.7s
+
+#26 [full 9/9] COPY rootfs /
+#26 DONE 0.1s
+
+#27 exporting to image
+#27 exporting layers 0.1s done
+#27 writing image sha256:429442adcb7a471e844b43b652cc8b27da914a306f225e77e4bd3c1759dad5fb done
+#27 naming to docker.io/k8sschool/k8s-toolbox:latest done
+#27 DONE 0.1s

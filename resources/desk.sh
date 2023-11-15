@@ -24,7 +24,7 @@ fi
 # Launch container
 #
 # Use host network to easily publish k8s dashboard
-IMAGE=k8sschool/k8s-toolbox
+IMAGE=docker.io/k8sschool/k8s-toolbox:latest
 if [ "$DEV" = true ]; then
     echo "Running in development mode"
     MOUNTS="$MOUNTS -v $DIR/rootfs/opt:/opt"
@@ -42,6 +42,7 @@ $MOUNTS --rm \
 -w $HOME -- \
 \"$IMAGE\""
 else
+    echo "Pulling image"
     docker pull -q "$IMAGE"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
     echo "   Welcome in k8s toolbox desk"
