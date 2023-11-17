@@ -3,7 +3,7 @@
 # k8s-toolbox
 
 Helper to install Kubernetes clusters, based on [kind], on any Linux system. Allow to easily setup:
-- multi-nodes cluster
+- mono or multi-nodes development clusters
 - use of Calico CNI
 - use of an insecure private registry
 
