@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# Install Helm on the client machine
-
+# Install kubectl
 # @author Fabrice Jammes
-#!/bin/bash
-
 
 set -euxo pipefail
 
@@ -22,9 +19,9 @@ test "$ARCH" = "x86_64" && ARCH="amd64"
 
 # If kind exists, compare current version to desired one
  if [ -e $KUBECTL_BIN ]; then
-    CURRENT_KUBECTL_VERSION="v$(kubectl version --client --short &> /dev/null | grep "^Client Version" | awk '{print $3}')"
-    if [ "$CURRENT_KIND_VERSION" != "$KUBECTL_VERSION" ]; then
-      sudo rm "$KIND_BIN"
+    CURRENT_KUBECTL_VERSION=$(kubectl version --client --short | grep "^Client Version" | awk '{print $3}')
+    if [ "$CURRENT_KUBECTL_VERSION" != "$KUBECTL_VERSION" ]; then
+      sudo rm "$KUBECTL_BIN"
     fi
 fi
 
