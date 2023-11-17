@@ -29,11 +29,18 @@ if [ "$DEV" = true ]; then
     echo "Running in development mode"
     MOUNTS="$MOUNTS -v $DIR/rootfs/opt:/opt"
 fi
+
 MOUNTS="$MOUNTS --volume $HOMEFS:$HOME"
 MOUNTS="$MOUNTS --volume $HOME/.kube:$HOME/.kube"
 MOUNTS="$MOUNTS --volume /tmp:/tmp"
 MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
+
+# Openshift binary is huge and optional, so it is not build inside the image
+oc_bin=$(which oc) || oc_bin=""
+if [ -n "$oc_bin" ]; then
+    MOUNTS="$MOUNTS --volume $oc_bin:/usr/local/bin/oc"
+fi
 
 if [ "$SHOWDOCKERCMD" = true ]; then
     echo "docker run -it --net=host \
