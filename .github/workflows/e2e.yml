@@ -15,6 +15,14 @@ jobs:
       - name: Build image
         run: |
           ./_desk/build-image.sh
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Push images to container registry
+        run: |
+          ./_desk/push-image.sh
   install_k8s:
     name: Install k8s and run tests
     runs-on: ubuntu-20.04
