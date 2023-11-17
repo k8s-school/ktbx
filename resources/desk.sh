@@ -49,8 +49,7 @@ $MOUNTS --rm \
 -w $HOME -- \
 \"$IMAGE\""
 else
-    echo "Pulling image"
-    docker pull -q "$IMAGE"
+    echo "Using local image $IMAGE"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
     echo "   Welcome in k8s toolbox desk"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
