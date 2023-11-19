@@ -99,7 +99,7 @@ RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/rel
 
 ARG FORCE_GO_REBUILD=false
 RUN $GOROOT/bin/go install -v github.com/k8s-school/clouder@latest
-RUN ls -rtl /go/bin 
+RUN $GOROOT/bin/go install -v github.com/k8s-school/ink@v0.0.1-rc3
 
 # Install rbac-tools
 RUN curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash
