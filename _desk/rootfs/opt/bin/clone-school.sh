@@ -12,11 +12,12 @@ do
     if [ ! -d "$reposrc" ]
     then
         echo "Cloning $reposrc"
-        git clone "$r"
+        git clone "$r" $reposrc
     else
         echo "Updating $reposrc"
         cd "$reposrc"
         git pull
+	cd $HOME
     fi
 done
 cd "$HOME"
