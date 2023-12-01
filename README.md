@@ -9,7 +9,7 @@ Helper to install Kubernetes clusters, based on [kind], on any Linux system. All
 
 Can be used for VMs launched by a  CI/CD platform, including [Github Action](https://github.com/k8s-school/k8s-toolbox/actions?query=workflow%3A"CI")
 
-[![CI Status](https://github.com/k8s-school/k8s-toolbox/workflows/CI/badge.svg?branch=main)](https://github.com/k8s-school/k8s-toolbox/actions?query=workflow%3A"CI")
+[![CI Status](https://github.com/k8s-school/ktbx/workflows/CI/badge.svg?branch=main)](https://github.com/k8s-school/ktbx/actions?query=workflow%3A"CI")
 
 Support kind v0.10.0 and k8s v1.20
 
