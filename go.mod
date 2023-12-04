@@ -3,7 +3,7 @@ module github.com/k8s-school/ktbx
 go 1.19
 
 require (
-	github.com/k8s-school/ciux v0.0.0-20231027090133-1e529512f7a0
+	github.com/k8s-school/ciux v0.0.1-rc8
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/cobra v1.7.0

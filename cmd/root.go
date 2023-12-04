@@ -19,7 +19,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/k8s-school/ktbx/log"
+	"github.com/k8s-school/ciux/log"
 	"github.com/spf13/cobra"
 )
 
@@ -76,5 +76,5 @@ func init() {
 
 // setUpLogs set the log output ans the log level
 func initLogger() {
-	log.SetLogLevel(verbosity)
+	log.Init(verbosity)
 }

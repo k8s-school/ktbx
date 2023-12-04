@@ -5,13 +5,14 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 	"os/exec"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/k8s-school/ktbx/internal"
-	"github.com/k8s-school/ktbx/log"
 )
 
 // createCmd represents the create command
@@ -51,12 +52,13 @@ func init() {
 func createCluster() {
 	_, err := exec.LookPath(internal.Kind)
 	if err != nil {
-		log.Fatalf("'%v' not found in PATH", internal.Kind)
+		slog.Error("binary not found in PATH", "binary", internal.Kind)
+		os.Exit(1)
 	}
 
 	c := internal.GetConfig()
 
-	log.Debugf("ktbx configuration %+v", c)
+	slog.Debug("ktbx configuration", "data", c)
 
 	internal.GenerateKindConfigFile(c)
 
@@ -71,14 +73,14 @@ func createCluster() {
 	ExecCmd(cmd, false)
 
 	if c.Calico {
-		log.Infof("Install Calico CNI")
+		slog.Info("Install Calico CNI")
 		cmd = `kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml &&
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml`
 		ExecCmd(cmd, false)
 
 	}
 
-	log.Infof("Wait for Kubernetes nodes to be up and running")
+	slog.Info("Wait for Kubernetes nodes to be up and running")
 	cmd = "kubectl wait --timeout=180s --for=condition=Ready node --all"
 	ExecCmd(cmd, false)
 }

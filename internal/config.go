@@ -9,12 +9,12 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/k8s-school/ciux/log"
 	"github.com/k8s-school/ktbx/resources"
 	defaults "github.com/mcuadros/go-defaults"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v2"
 )
 
@@ -33,9 +33,10 @@ func LogConfiguration() {
 	c := viper.AllSettings()
 	bs, err := yaml.Marshal(c)
 	if err != nil {
-		log.Fatalf("unable to marshal ktbx configuration to YAML: %v", err)
+		slog.Error("unable to marshal ktbx configuration to YAML", "error", err)
+		os.Exit(1)
 	}
-	log.Infof("Current ktbx configuration:\n%s", bs)
+	slog.Info("Current ktbx configuration:\n%s", bs)
 }
 
 // viperUnmarshalKey unmarshals the value of a given key from Viper configuration into a struct.
@@ -68,7 +69,7 @@ func format(s string, v interface{}) string {
 	b := new(strings.Builder)
 	err := template.Must(t.Parse(s)).Execute(b, v)
 	if err != nil {
-		log.Fatalf("Error while formatting string %s: %v", s, err)
+		slog.Error("failed formatting string", "string", s, "erro", err)
 	}
 	return b.String()
 }
@@ -85,7 +86,7 @@ func GetConfig() KtbxConfig {
 }
 
 func GenerateKindConfigFile(c KtbxConfig) {
-	log.Infof("Generate kind configuration file: %s", KindConfigFile)
+	slog.Info("Generate kind configuration file", "file", KindConfigFile)
 
 	f, err := os.Create(KindConfigFile)
 	cobra.CheckErr(err)
@@ -127,10 +128,8 @@ func ReadConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-
-		log.Debugf("Find user custom configuration %s", viper.ConfigFileUsed())
-		log.Debugf("Use config file: %s", viper.ConfigFileUsed())
+		slog.Debug("Use config file", "file", viper.ConfigFileUsed())
 	} else {
-		log.Warnf("Fail reading configuration files in $KTBXCONFIG, $HOME/.ktbx, use default configuration", err, viper.ConfigFileUsed())
+		slog.Warn("Fail reading configuration files in $KTBXCONFIG, $HOME/.ktbx, switch to default configuration", "error", err, "file", viper.ConfigFileUsed())
 	}
 }

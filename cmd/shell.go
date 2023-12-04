@@ -3,10 +3,9 @@ package cmd
 import (
 	"bytes"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
-
-	"github.com/k8s-school/ktbx/log"
 )
 
 const ShellToUse = "bash"
@@ -15,7 +14,7 @@ func ExecCmd(command string, interactive bool) (string, string) {
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if !dryRun {
-		log.Infof("Launch command: %v", command)
+		slog.Info("Launch command", "command", command)
 		cmd := exec.Command(ShellToUse, "-c", command)
 		if interactive {
 			cmd.Stdin = os.Stdin
@@ -27,13 +26,13 @@ func ExecCmd(command string, interactive bool) (string, string) {
 		}
 		err := cmd.Run()
 		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
+			slog.Error("cmd.Run() failed", "error", err)
 		}
 		// logger.Infof("stdout %v", stdoutBuf)
 		// logger.Infof("stderr %v", stderrBuf)
 
 	} else {
-		log.Infof("Dry run %s", command)
+		slog.Info("Dry run", "command", command)
 	}
 	return stdoutBuf.String(), stderrBuf.String()
 }

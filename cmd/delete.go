@@ -5,9 +5,9 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/k8s-school/ktbx/internal"
-	"github.com/k8s-school/ktbx/log"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete a kind cluster",
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Infof("Delete %v cluster")
+		slog.Info("Delete %v cluster")
 		deleteCluster()
 	},
 }

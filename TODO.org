@@ -1,3 +1,4 @@
+* TODO ktbx should check that kind is available and install it if not
 * TODO Mount /tmp inside desk
 * TODO add unit/CI tests
 * TODO Add option for audit logs:

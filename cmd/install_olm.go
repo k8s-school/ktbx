@@ -4,7 +4,8 @@ Copyright © 2023 Fabrice Jammes fabrice.jammes@k8s-school.fr
 package cmd
 
 import (
-	"github.com/k8s-school/ktbx/log"
+	"log/slog"
+
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
 )
@@ -15,7 +16,7 @@ var olmCmd = &cobra.Command{
 	Short: "Install OLM",
 	Long:  `Install Operator Lifecycle Manager (OLM)`,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Info("Install OLM")
+		slog.Info("Install OLM")
 
 		ExecCmd(resources.OlmInstallScript, false)
 	},
