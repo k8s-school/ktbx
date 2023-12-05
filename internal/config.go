@@ -36,7 +36,7 @@ func LogConfiguration() {
 		slog.Error("unable to marshal ktbx configuration to YAML", "error", err)
 		os.Exit(1)
 	}
-	slog.Info("Current ktbx configuration:\n%s", bs)
+	slog.Info("Current ktbx configuration", "data", bs)
 }
 
 // viperUnmarshalKey unmarshals the value of a given key from Viper configuration into a struct.
@@ -93,6 +93,7 @@ func GenerateKindConfigFile(c KtbxConfig) {
 	defer f.Close()
 
 	kindconfig := applyTemplate(c)
+	slog.Debug("kind configuration", "data", kindconfig)
 	f.WriteString(kindconfig)
 }
 
@@ -130,6 +131,6 @@ func ReadConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		slog.Debug("Use config file", "file", viper.ConfigFileUsed())
 	} else {
-		slog.Warn("Fail reading configuration files in $KTBXCONFIG, $HOME/.ktbx, switch to default configuration", "error", err, "file", viper.ConfigFileUsed())
+		slog.Warn("Fail reading configuration files in $KTBXCONFIG, $HOME/.ktbx, switch to default configuration", "error", err)
 	}
 }
