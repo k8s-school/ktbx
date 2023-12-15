@@ -1,4 +1,4 @@
-[<img src="logo.png" alt="k8s-toolbox, all in one" height="50" />](https://github.com/k8s-school/ktbx)
+[<img src="k8s-toolbox.png" alt="k8s-toolbox, all in one" height="50" />](https://github.com/k8s-school/ktbx)
 
 # k8s-toolbox
 

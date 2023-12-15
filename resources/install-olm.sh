@@ -18,4 +18,4 @@ echo "Wait for operator-lifecycle-manager to be ready"
 kubectl rollout status deployment/olm-operator --timeout=120s -n olm
 
 echo "Wait for operatorhubio-catalog pod to be ready"
-kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog
+kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout=120s
