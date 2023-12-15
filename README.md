@@ -1,4 +1,3 @@
-[<img src="http://k8s-school.fr/images/logo.svg" alt="K8s-school Logo, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
 [<img src="logo.png" alt="k8s-toolbox, all in one" height="50" />](https://github.com/k8s-school/ktbx)
 
 # k8s-toolbox
@@ -89,3 +88,4 @@ jobs:
 ```
 
 [kind]:https://github.com/kubernetes-sigs/kind
+[<img src="http://k8s-school.fr/images/logo.svg" alt="K8s-school Logo, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
