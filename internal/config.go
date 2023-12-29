@@ -51,7 +51,8 @@ func viperUnmarshalKey(key string, out interface{}) error {
 	return mapstructure.Decode(in[key], out)
 }
 
-func format(s string, v interface{}) string {
+// FormatTemplate formats a string using a template and a struct.
+func FormatTemplate(tplStr string, v interface{}) string {
 
 	funcMap := template.FuncMap{
 		"Iterate": func(count uint) []uint {
@@ -67,9 +68,9 @@ func format(s string, v interface{}) string {
 	t := new(template.Template).Funcs(funcMap)
 
 	b := new(strings.Builder)
-	err := template.Must(t.Parse(s)).Execute(b, v)
+	err := template.Must(t.Parse(tplStr)).Execute(b, v)
 	if err != nil {
-		slog.Error("failed formatting string", "string", s, "erro", err)
+		slog.Error("failed formatting string", "string", tplStr, "erro", err)
 	}
 	return b.String()
 }
@@ -101,7 +102,7 @@ func applyTemplate(sc KtbxConfig) string {
 
 	// TODO check https://github.com/helm/helm/blob/main/pkg/chartutil/values.go
 
-	kindconfig := format(resources.KindConfigTemplate, &sc)
+	kindconfig := FormatTemplate(resources.KindConfigTemplate, &sc)
 	return kindconfig
 }
 

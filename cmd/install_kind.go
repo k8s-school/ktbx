@@ -6,9 +6,16 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/k8s-school/ktbx/internal"
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
 )
+
+var kindVersion string
+
+type KindInstallConfig struct {
+	KindVersion string
+}
 
 // helmCmd represents the helm command
 var kindCmd = &cobra.Command{
@@ -16,22 +23,20 @@ var kindCmd = &cobra.Command{
 	Short: "Install Kubectl on the client machine",
 	Long:  `Install Kubectl on the client machine. Sudo access is required to install components on the client machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Install kubectl")
+		fmt.Println("Install kind")
 
-		ExecCmd(resources.KindInstallScript, false)
+		k := KindInstallConfig{
+			KindVersion: kindVersion,
+		}
+
+		script := internal.FormatTemplate(resources.KindInstallScript, k)
+
+		ExecCmd(script, false)
 	},
 }
 
 func init() {
 	installCmd.AddCommand(kindCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// helmCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// helmCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	kindCmd.Flags().StringVar(&kindVersion, "kind-version", "v0.20.0", "Kind version to install")
 }
