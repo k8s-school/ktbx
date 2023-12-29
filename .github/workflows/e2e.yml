@@ -48,3 +48,14 @@ jobs:
       - name: Test nginx
         run: |
           ./itest/test-nginx.sh
+      - name: Install olm and argocd
+        run: |
+          ktbx install olm
+          ktbx install argocd
+      - name: Run argocd example application
+        run: |
+          kubectl config set-context --current --namespace=argocd
+          argocd login --core
+          argocd app create apps --dest-namespace argocd --dest-server https://kubernetes.default.svc \
+            --repo https://github.com/argoproj/argocd-example-apps.git --path apps
+          argocd app sync apps

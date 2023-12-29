@@ -84,7 +84,7 @@ kubectl apply -f /tmp/argocd-namespace.yaml
 
 echo "Install ArgoCD"
 cat > /tmp/argocd.yaml <<ARGOCD
-apiVersion: argoproj.io/v1alpha1
+apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
   name: argocd
@@ -98,3 +98,8 @@ echo "Install ArgoCD CLI $ARGO_VERSION"
 curl -sSL -o /tmp/argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/$ARGO_VERSION/argocd-linux-amd64
 sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
 rm /tmp/argocd-linux-amd64
+
+for obj in statefulset.apps/argocd-application-controller deployment.apps/argocd-redis deployment.apps/argocd-repo-server deployment.apps/argocd-server; do
+  echo "Wait for $obj to be ready"
+  kubectl rollout status $obj --timeout="${WAIT_TIMEOUT}s" -n argocd
+done
