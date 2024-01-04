@@ -1,3 +1,4 @@
+* TODO ktbx config file should contain additional tool to install (kind, olm, argocd, ...)
 * TODO ktbx should check that kind is available and install it if not
 * TODO Mount /tmp inside desk
 * TODO add unit/CI tests
