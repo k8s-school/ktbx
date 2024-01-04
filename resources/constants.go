@@ -10,7 +10,7 @@ var OlmInstallScript string
 //go:embed install-argocd.sh
 var ArgoCDInstallScript string
 
-//go:embed install-argoworkflow.sh
+//go:embed install-argoworkflows.sh
 var ArgoWorkflowInstallScript string
 
 //go:embed desk.sh

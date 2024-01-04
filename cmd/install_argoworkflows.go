@@ -11,19 +11,19 @@ import (
 )
 
 // argocdCmd represents the argocd command
-var argoWorkflowCmd = &cobra.Command{
+var argoWorkflowsCmd = &cobra.Command{
 	Use:   "argowf",
-	Short: "Install Argo-workflow",
-	Long:  `Install Argo-workflow`,
+	Short: "Install Argo-workflows",
+	Long:  `Install Argo-workflows`,
 	Run: func(cmd *cobra.Command, args []string) {
-		slog.Info("Install Argo-workflow")
+		slog.Info("Install Argo-workflows")
 
 		ExecCmd(resources.ArgoWorkflowInstallScript, false)
 	},
 }
 
 func init() {
-	installCmd.AddCommand(argoWorkflowCmd)
+	installCmd.AddCommand(argoWorkflowsCmd)
 
 	// Here you will define your flags and configuration settings.
 
