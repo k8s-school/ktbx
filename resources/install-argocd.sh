@@ -99,7 +99,7 @@ curl -sSL -o /tmp/argocd-linux-amd64 https://github.com/argoproj/argo-cd/release
 sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
 rm /tmp/argocd-linux-amd64
 
-wait_for_exist argocd statefulset.apps 120 
+wait_for_exist argocd statefulset.apps 120
 for obj in statefulset.apps/argocd-application-controller deployment.apps/argocd-redis deployment.apps/argocd-repo-server deployment.apps/argocd-server; do
   echo "Wait for $obj to be ready"
   kubectl rollout status $obj --timeout="${WAIT_TIMEOUT}s" -n argocd
