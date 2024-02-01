@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/internal"
 	"github.com/spf13/cobra"
@@ -22,8 +23,11 @@ func deleteCluster() {
 
 	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, optName)
 
-	ExecCmd(cmd, false)
-
+	_, _, err := ExecCmd(cmd, false)
+	if err != nil {
+		slog.Error("Error while deleting cluster", "error", err)
+		os.Exit(1)
+	}
 }
 
 // deleteCmd represents the delete command

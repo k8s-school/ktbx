@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
@@ -18,7 +19,11 @@ var argoWorkflowsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		slog.Info("Install Argo-workflows")
 
-		ExecCmd(resources.ArgoWorkflowInstallScript, false)
+		_, _, err := ExecCmd(resources.ArgoWorkflowInstallScript, false)
+		if err != nil {
+			slog.Error("Error while installing Argo-workflows", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 

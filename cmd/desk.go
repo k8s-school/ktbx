@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
@@ -23,10 +25,18 @@ var deskCmd = &cobra.Command{
 		if showDockerCmd {
 			// TODO escape ' in command
 			script := "SHOWDOCKERCMD=true\n" + resources.DeskRunScript
-			ExecCmd(script, false)
+			_, _, err := ExecCmd(script, false)
+			if err != nil {
+				slog.Error("Error while executing desk script", "error", err)
+				os.Exit(1)
+			}
 		} else {
 			fmt.Println("Launch interactive desk")
-			ExecCmd(resources.DeskRunScript, true)
+			_, _, err := ExecCmd(resources.DeskRunScript, true)
+			if err != nil {
+				slog.Error("Error while launching interactive desk", "error", err)
+				os.Exit(1)
+			}
 		}
 
 	},

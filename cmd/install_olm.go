@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
@@ -18,7 +19,11 @@ var olmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		slog.Info("Install OLM")
 
-		ExecCmd(resources.OlmInstallScript, false)
+		_, _, err := ExecCmd(resources.OlmInstallScript, false)
+		if err != nil {
+			slog.Error("Error while installing OLM", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 

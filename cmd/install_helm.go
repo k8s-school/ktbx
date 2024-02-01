@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
@@ -18,7 +20,11 @@ var helmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install helm")
 
-		ExecCmd(resources.HelmInstallScript, false)
+		_, _, err := ExecCmd(resources.HelmInstallScript, false)
+		if err != nil {
+			slog.Error("Error while installing helm", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 

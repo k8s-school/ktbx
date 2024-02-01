@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/internal"
 	"github.com/k8s-school/ktbx/resources"
@@ -31,7 +33,11 @@ var kindCmd = &cobra.Command{
 
 		script := internal.FormatTemplate(resources.KindInstallScript, k)
 
-		ExecCmd(script, false)
+		_, _, err := ExecCmd(script, false)
+		if err != nil {
+			slog.Error("Error while installing kind", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 

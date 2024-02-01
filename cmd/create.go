@@ -70,17 +70,30 @@ func createCluster() {
 	cmd_tpl := "%v create cluster --config %v%v"
 	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, internal.KindConfigFile, optName)
 
-	ExecCmd(cmd, false)
+	_, _, err = ExecCmd(cmd, false)
+	if err != nil {
+		slog.Error("kind create cluster failed", "error", err)
+		os.Exit(1)
+	}
 
 	if c.Calico {
 		slog.Info("Install Calico CNI")
 		cmd = `kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml &&
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml`
-		ExecCmd(cmd, false)
+		_, _, err = ExecCmd(cmd, false)
+		if err != nil {
+			slog.Error("calico installation failed", "error", err)
+			os.Exit(1)
+		}
 
 	}
 
 	slog.Info("Wait for Kubernetes nodes to be up and running")
 	cmd = "kubectl wait --timeout=180s --for=condition=Ready node --all"
 	ExecCmd(cmd, false)
+	_, _, err = ExecCmd(cmd, false)
+	if err != nil {
+		slog.Error("kubectl wait failed", "error", err)
+		os.Exit(1)
+	}
 }

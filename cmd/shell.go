@@ -10,7 +10,7 @@ import (
 
 const ShellToUse = "bash"
 
-func ExecCmd(command string, interactive bool) (string, string) {
+func ExecCmd(command string, interactive bool) (string, string, error) {
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if !dryRun {
@@ -27,6 +27,7 @@ func ExecCmd(command string, interactive bool) (string, string) {
 		err := cmd.Run()
 		if err != nil {
 			slog.Error("cmd.Run() failed", "error", err)
+			return stdoutBuf.String(), stderrBuf.String(), err
 		}
 		// logger.Infof("stdout %v", stdoutBuf)
 		// logger.Infof("stderr %v", stderrBuf)
@@ -34,5 +35,5 @@ func ExecCmd(command string, interactive bool) (string, string) {
 	} else {
 		slog.Info("Dry run", "command", command)
 	}
-	return stdoutBuf.String(), stderrBuf.String()
+	return stdoutBuf.String(), stderrBuf.String(), nil
 }

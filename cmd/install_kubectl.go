@@ -5,6 +5,8 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
+	"os"
 
 	"github.com/k8s-school/ktbx/resources"
 	"github.com/spf13/cobra"
@@ -18,7 +20,11 @@ var kubectlCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Install kubectl")
 
-		ExecCmd(resources.KubectlInstallScript, false)
+		_, _, err := ExecCmd(resources.KubectlInstallScript, false)
+		if err != nil {
+			slog.Error("Error while installing kubectl", "error", err)
+			os.Exit(1)
+		}
 	},
 }
 
