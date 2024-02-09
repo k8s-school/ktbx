@@ -22,10 +22,10 @@ echo "Wait for operatorhubio-catalog pod to be ready"
 # Sometime the first operatorhubio-catalog pod is failing
 # and the 'kubectl wait' fails waiting for it
 counter=0
-while [ $counter -le 1 ]
+max_retry=5
+while ! kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout=120s
 do
-    kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout=120s
-    if [ $? -eq 0 ]; then
+    if [ $counter -eq $max_retry ]; then
         break
     fi
     counter=$((counter+1))
