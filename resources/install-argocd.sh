@@ -15,7 +15,8 @@ GITHUB_URL="https://raw.githubusercontent.com/argoproj-labs/argocd-operator/$ARG
 
 OPERATOR_NAMESPACE="operators"
 
-WAIT_TIMEOUT=120
+timeout=240
+timeout_sec="${timeout}s"
 
 wait_for_exist() {
   xtrace=$(set +o|grep xtrace); set +x
@@ -65,12 +66,12 @@ spec:
 SUBSCRIPTION
 kubectl apply -f "/tmp/subscription.yaml"
 
-wait_for_exist "$OPERATOR_NAMESPACE" installplans 120
-kubectl wait installplans -n "$OPERATOR_NAMESPACE" --for=condition=Installed -l "operators.coreos.com/argocd-operator.operators=" --timeout="${WAIT_TIMEOUT}s"
+wait_for_exist "$OPERATOR_NAMESPACE" installplans "$timeout"
+kubectl wait installplans -n "$OPERATOR_NAMESPACE" --for=condition=Installed -l "operators.coreos.com/argocd-operator.operators=" --timeout="$timeout_sec"
 kubectl get -n "$OPERATOR_NAMESPACE" installplans
 
 echo "Wait for ArgoCD Operator to be ready"
-kubectl rollout status deployment/argocd-operator-controller-manager --timeout="${WAIT_TIMEOUT}s" -n "$OPERATOR_NAMESPACE"
+kubectl rollout status deployment/argocd-operator-controller-manager --timeout="$timeout_sec" -n "$OPERATOR_NAMESPACE"
 
 echo "Create ArgoCD namespace"
 cat > /tmp/argocd-namespace.yaml <<ARGOCD_NAMESPACE
@@ -99,8 +100,8 @@ curl -sSL -o /tmp/argocd-linux-amd64 https://github.com/argoproj/argo-cd/release
 sudo install -m 555 /tmp/argocd-linux-amd64 /usr/local/bin/argocd
 rm /tmp/argocd-linux-amd64
 
-wait_for_exist argocd statefulset.apps 120
+wait_for_exist argocd statefulset.apps "$timeout"
 for obj in statefulset.apps/argocd-application-controller deployment.apps/argocd-redis deployment.apps/argocd-repo-server deployment.apps/argocd-server; do
   echo "Wait for $obj to be ready"
-  kubectl rollout status $obj --timeout="${WAIT_TIMEOUT}s" -n argocd
+  kubectl rollout status $obj --timeout="$timeout_sec" -n argocd
 done
