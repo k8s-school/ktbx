@@ -16,7 +16,7 @@ chmod +x /tmp/install.sh
 /tmp/install.sh "$olm_version"
 
 echo "Wait for operator-lifecycle-manager to be ready"
-kubectl rollout status -n olm deployment/olm-operator --timeout_sec="$timeout_sec"
+kubectl rollout status -n olm deployment/olm-operator --timeout="$timeout_sec"
 
 echo "Wait for operatorhubio-catalog pod to be ready"
 
@@ -24,7 +24,7 @@ echo "Wait for operatorhubio-catalog pod to be ready"
 # and the 'kubectl wait' fails waiting for it
 counter=0
 max_retry=5
-while ! kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout_sec="$timeout_sec"
+while ! kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout="$timeout_sec"
 dos"
     if [ $counter -eq $max_retry ]; then
         break
