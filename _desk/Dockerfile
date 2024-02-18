@@ -98,7 +98,7 @@ RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/rel
   && mv "/tmp/k9s" "/usr/local/bin/k9s"
 
 ARG FORCE_GO_REBUILD=false
-RUN $GOROOT/bin/go install -v github.com/k8s-school/clouder@latest
+RUN $GOROOT/bin/go install -v github.com/k8s-school/clouder@v0.0.1-rc4
 RUN $GOROOT/bin/go install -v github.com/k8s-school/ink@v0.0.1-rc3
 
 # Install rbac-tools
