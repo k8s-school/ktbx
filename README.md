@@ -56,7 +56,7 @@ source ~/.bashrc
 ### Setup
 
 Enable Github Action by creating file `.github/workflow/itests.yaml`, based on template below:
-```
+```yaml
 name: "Install k8s cluster"
 on:
   push:
@@ -81,6 +81,15 @@ jobs:
           go install github.com/k8s-school/ktbx@main
           ktbx create -s
           ktbx install kubectl
+      # Optional
+      - name: Install olm and argocd operators
+        run: |
+          ktbx install olm
+          ktbx install argocd
+      # Optional
+      - name: Install argo-workflows
+        run: |
+          ktbx install argowf
       - name: Install and test application
         run: |
           kubectl create deployment my-nginx --image=nginx
