@@ -1,7 +1,7 @@
 * TODO ktbx config file should contain additional tool to install (kind, olm, argocd, ...)
 * TODO ktbx should check that kind is available and install it if not
-* TODO Mount /tmp inside desk
-* TODO add unit/CI tests
+* DONE Mount /tmp inside desk
+* DONE add unit/CI tests
 * TODO Add option for audit logs:
 https://kind.sigs.k8s.io/docs/user/auditing/
 * TODO monitor https://github.com/kubernetes-sigs/kind/issues/3310
