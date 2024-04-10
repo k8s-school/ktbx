@@ -13,10 +13,18 @@ Can be used for runners launched by a  CI/CD platform, including [Github Action]
 
 Support `kind-v0.20.0` and `k8s-v1.25+`
 
+## Pre-requisites
+
+- go 1.21+
+- `sudo` access
+
 ## Run kind on a workstation, in two lines of code
 
 ```shell
-go install github.com/k8s-school/ktbx@v1.1.1-rc2
+go install github.com/k8s-school/ktbx@v1.1.1-rc17
+
+# Install kind
+ktbx install kind
 
 # Run a single node k8s cluster with kind
 ktbx create -s
