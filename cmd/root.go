@@ -70,7 +70,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&clusterName, "name", "", "cluster name, default to 'kind'")
+	rootCmd.PersistentFlags().StringVarP(&clusterName, "name", "n", "", "cluster name, default to 'kind'")
 
 }
 

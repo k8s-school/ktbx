@@ -16,7 +16,7 @@ func deleteCluster() {
 
 	optName := ""
 	if clusterName != "" {
-		optName = " --name" + clusterName
+		optName = " --name " + clusterName
 	}
 
 	cmd_tpl := "%v delete cluster%v"

@@ -65,7 +65,7 @@ func createCluster() {
 
 	optName := ""
 	if clusterName != "" {
-		optName = " --name" + clusterName
+		optName = " --name " + clusterName
 	}
 
 	cmd_tpl := "%v create cluster --config %v%v"
