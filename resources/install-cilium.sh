@@ -18,3 +18,6 @@ sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
 cilium install --version "$CILIUM_VERSION"
+
+echo "Wait for cilium daemonset to be ready"
+kubectl rollout status -n kube-system --timeout=600s daemonset/cilium
