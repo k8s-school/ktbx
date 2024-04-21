@@ -42,6 +42,7 @@ jobs:
       - name: Install k8s using kind
         run: |
           ktbx install kind
+          ktbx install helm
           ktbx create --single -c ${{ matrix.cni }}
           kubectl get pods -n kube-system
           kubectl get nodes
