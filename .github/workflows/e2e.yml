@@ -23,7 +23,10 @@ jobs:
       - name: Push images to container registry
         run: |
           ./_desk/push-image.sh
-  install_k8s:
+  check_cni:
+    strategy:
+      matrix:
+        cni: [calico, cilium]
     name: Install k8s and run tests
     runs-on: ubuntu-22.04
     steps:
@@ -39,7 +42,7 @@ jobs:
       - name: Install k8s using kind
         run: |
           ktbx install kind
-          ktbx create --single -c calico
+          ktbx create --single -c ${{ matrix.cni }}
           kubectl get pods -n kube-system
           kubectl get nodes
       - name: Start nginx
@@ -48,6 +51,39 @@ jobs:
       - name: Test nginx
         run: |
           ./itest/test-nginx.sh
+      - name: Install olm and argocd
+        run: |
+          ktbx install olm
+          ktbx install argocd
+      - name: Run argocd example application
+        run: |
+          kubectl config set-context --current --namespace=argocd
+          argocd login --core
+          argocd app create apps --dest-namespace argocd --dest-server https://kubernetes.default.svc \
+            --repo https://github.com/argoproj/argocd-example-apps.git --path apps
+          argocd app sync apps
+      - name: Install argo-workflows
+        run: |
+          ktbx install argowf
+  check_argo:
+    name: Install k8s and run tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.20.3'
+      - run: go version
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build and install k8s-toolbox
+        run: |
+          go install .
+      - name: Install k8s using kind
+        run: |
+          ktbx install kind
+          ktbx create --single
+          kubectl get pods -n kube-system
+          kubectl get nodes
       - name: Install olm and argocd
         run: |
           ktbx install olm
