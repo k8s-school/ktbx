@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/k8s-school/ktbx/internal"
+	"github.com/k8s-school/ktbx/resources"
 )
 
 // createCmd represents the create command
@@ -40,9 +41,9 @@ func init() {
 	createCmd.PersistentFlags().BoolP(single, "s", false, "create a single node k8s cluster, take precedence over configuration file 'workers' parameter")
 	viper.BindPFlag(single, createCmd.PersistentFlags().Lookup(single))
 
-	calico := "calico"
-	createCmd.PersistentFlags().BoolP(calico, "c", false, "install calico CNI, take precedence over configuration file 'usecalico' parameter")
-	viper.BindPFlag("kind."+calico, createCmd.PersistentFlags().Lookup(calico))
+	cni := "cni"
+	createCmd.PersistentFlags().StringP(cni, "c", "", "install custom CNI (cilium, calico), take precedence over configuration file 'cni' parameter")
+	viper.BindPFlag("kind."+cni, createCmd.PersistentFlags().Lookup(cni))
 
 	auditlog := "auditlog"
 	createCmd.PersistentFlags().BoolP(auditlog, "a", false, "enable audit log inside API server, take precedence over configuration file 'auditlog' parameter")
@@ -76,13 +77,22 @@ func createCluster() {
 		os.Exit(1)
 	}
 
-	if c.Calico {
-		slog.Info("Install Calico CNI")
-		cmd = `kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml &&
-kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml`
-		_, _, err = ExecCmd(cmd, false)
+	if len(c.Cni) != 0 {
+		slog.Info("Install custom CNI", "name", c.Cni)
+
+		switch c.Cni {
+		case "calico":
+			cmd = `kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml &&
+			kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml`
+			_, _, err = ExecCmd(cmd, false)
+		case "cilium":
+			_, _, err = ExecCmd(resources.CiliumInstallScript, false)
+
+		default:
+			err = fmt.Errorf("unsupported cni plugin %s", c.Cni)
+		}
 		if err != nil {
-			slog.Error("calico installation failed", "error", err)
+			slog.Error("Error while installing cni", "error", err)
 			os.Exit(1)
 		}
 

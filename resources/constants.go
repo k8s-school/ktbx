@@ -13,6 +13,9 @@ var ArgoCDInstallScript string
 //go:embed install-argoworkflows.sh
 var ArgoWorkflowInstallScript string
 
+//go:embed install-cilium.sh
+var CiliumInstallScript string
+
 //go:embed desk.sh
 var DeskRunScript string
 

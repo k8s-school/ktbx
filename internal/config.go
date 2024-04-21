@@ -25,7 +25,7 @@ type KtbxConfig struct {
 	ExtraMountPath  string `mapstructure:"extramountpath" default:""`
 	LocalCertSANs   bool   `mapstructure:"localcertsans" default:"false"`
 	PrivateRegistry string `mapstructure:"privateregistry" default:""`
-	Calico          bool   `mapstructure:"calico" default:"false"`
+	Cni             string `mapstructure:"cni" default:""`
 	Workers         uint   `mapstructure:"workers" default:"3"`
 }
 

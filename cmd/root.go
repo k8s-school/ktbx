@@ -43,7 +43,7 @@ Examples:
   ktbx configgen
 
   # Create a single-node cluster using calico CNI
-  ktbx create --single --calico
+  ktbx create --single -c calico
 
   # Delete kind cluster
   ktbx delete

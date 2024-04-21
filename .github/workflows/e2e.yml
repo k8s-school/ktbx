@@ -39,7 +39,7 @@ jobs:
       - name: Install k8s using kind
         run: |
           ktbx install kind
-          ktbx create --single --calico
+          ktbx create --single -c calico
           kubectl get pods -n kube-system
           kubectl get nodes
       - name: Start nginx

@@ -52,6 +52,6 @@ func TestGetConfig(t *testing.T) {
 	c := GetConfig()
 	t.Logf("Config: %+v", c)
 	assert.Equal(uint(1), c.Workers)
-	assert.Equal(false, c.Calico)
+	assert.Equal("", c.Cni)
 
 }

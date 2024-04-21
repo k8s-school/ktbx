@@ -10,7 +10,7 @@ kind:
   localcertsans: false
 
   # Use calico CNI instead of kindnet
-  # calico: true
+  # cni: calico
   # Number of worker nodes
   workers: 1
 
