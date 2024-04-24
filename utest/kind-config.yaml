@@ -1,17 +1,13 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-{{- if .PrivateRegistry }}
 containerdConfigPatches:
 - |-
   # FIXME deprecated replace with https://github.com/kubernetes-sigs/kind/issues/3310#issuecomment-1641515799
-  [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ .PrivateRegistry }}".tls]
+  [plugins."io.containerd.grpc.v1.cri".registry.configs."docker-registry.docker-registry:5000".tls]
      insecure_skip_verify = true
-{{- end }}
-{{- if .Cni }}
 networking:
   disableDefaultCNI: true # disable kindnet
   podSubnet: "192.168.0.0/16"
-{{- end }}
 nodes:
 - role: control-plane
   kubeadmConfigPatches:
@@ -23,7 +19,6 @@ nodes:
     apiServer:
       extraArgs:
         enable-admission-plugins: NodeRestriction,ResourceQuota
-    {{- if .AuditPolicy }}
         # enable auditing flags on the API server
         audit-log-path: /var/log/kubernetes/kube-apiserver-audit.log
         audit-policy-file: /etc/kubernetes/policies/audit-policy.yaml
@@ -39,26 +34,15 @@ nodes:
           mountPath: "/var/log/kubernetes"
           readOnly: false
           pathType: DirectoryOrCreate
-    {{- end }}
-    {{- if .LocalCertSANs }}
       certSANs:
         - "127.0.0.1"
-	{{- end }}
   extraMounts:
-  {{- if .ExtraMountPath }}
-  - hostPath: {{ .ExtraMountPath }}
+  - hostPath: /tmp/extra-mount-path
     containerPath: /mnt/extra
-  {{- end }}
-  {{- if .AuditPolicy }}
-  - hostPath: {{ .AuditPolicy }}
+  - hostPath: /tmp/audit-policy.yaml
     containerPath: /etc/kubernetes/policies/audit-policy.yaml
     readOnly: true
-  {{- end }}
-{{- range $val := Iterate .Workers }}
 - role: worker
   extraMounts:
-  {{- if $.ExtraMountPath }}
-  - hostPath: {{ $.ExtraMountPath }}
+  - hostPath: /tmp/extra-mount-path
     containerPath: /mnt/extra
-  {{- end }}
-{{- end }}

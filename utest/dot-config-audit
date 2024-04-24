@@ -1,5 +1,8 @@
 # Used by unit tests
 kind:
+
+  auditPolicy: /tmp/audit-policy.yaml
+
   # Use host directory to share data between host and kind node
   # host directory will be mounted on /mnt/extra on each node
   extraMountPath: /media

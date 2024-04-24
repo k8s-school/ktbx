@@ -7,19 +7,19 @@ import (
 	"testing"
 
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
+	require "github.com/stretchr/testify/assert"
 )
 
 func setupSuite(tb testing.TB) func(tb testing.TB) {
 	log.Println("setup suite")
 
-	assert := assert.New(tb)
+	require := require.New(tb)
 	wd, err := os.Getwd()
-	assert.NoError(err)
+	require.NoError(err)
 	parent := filepath.Dir(wd)
-	ktbxConfigFile := filepath.Join(parent, "dot-config.example")
+	ktbxConfigFile := filepath.Join(parent, "utest", "dot-config-audit")
 	err = os.Setenv("KTBXCONFIG", ktbxConfigFile)
-	assert.NoError(err)
+	require.NoError(err)
 
 	// Return a function to teardown the test
 	return func(tb testing.TB) {
@@ -31,11 +31,12 @@ func TestReadConfig(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
-	assert := assert.New(t)
+	require := require.New(t)
 	ReadConfig()
-	assert.Equal(
+	require.Equal(
 		map[string]interface{}(
 			map[string]interface{}{
+				"auditpolicy":     "/tmp/audit-policy.yaml",
 				"extramountpath":  "/media",
 				"localcertsans":   false,
 				"privateregistry": "docker-registry.docker-registry:5000",
@@ -47,11 +48,49 @@ func TestGetConfig(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
 
-	assert := assert.New(t)
+	require := require.New(t)
 	ReadConfig()
 	c := GetConfig()
 	t.Logf("Config: %+v", c)
-	assert.Equal(uint(1), c.Workers)
-	assert.Equal("", c.Cni)
+	require.Equal(uint(1), c.Workers)
+	require.Equal("", c.Cni)
 
+}
+func TestGenerateKindConfigFile(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+
+	require := require.New(t)
+
+	// Create a temporary directory for the test
+	tmpDir, err := os.MkdirTemp("/tmp", "kind-config")
+	require.NoError(err)
+	defer os.RemoveAll(tmpDir)
+
+	// Create a sample KtbxConfig
+	config := KtbxConfig{
+		Workers:         1,
+		Cni:             "calico",
+		AuditPolicy:     "/tmp/audit-policy.yaml",
+		ExtraMountPath:  "/tmp/extra-mount-path",
+		LocalCertSANs:   true,
+		PrivateRegistry: "docker-registry.docker-registry:5000",
+	}
+
+	// Call the GenerateKindConfigFile function
+	GenerateKindConfigFile(config)
+
+	// Read the contents of the generated file
+	fileContents, err := os.ReadFile(KindConfigFile)
+	require.NoError(err)
+
+	// Assert the expected file contents
+	wd, err := os.Getwd()
+	require.NoError(err)
+	parent := filepath.Dir(wd)
+	expectedKindConfigFile := filepath.Join(parent, "utest", "kind-config.yaml")
+
+	expectedContents, err := os.ReadFile(expectedKindConfigFile)
+	require.NoError(err)
+	require.Equal(string(expectedContents), string(fileContents))
 }

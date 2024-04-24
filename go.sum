@@ -128,8 +128,6 @@ github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1:6v2b51hI/fHJwM22ozAgKL4VKDeJcHhJFhtBdhmNjmU=
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=
-github.com/k8s-school/ciux v0.0.0-20231027090133-1e529512f7a0 h1:w+EetWslmntWl6SUrA8kTh9nPxDUb4PnfTt/LA3r9fs=
-github.com/k8s-school/ciux v0.0.0-20231027090133-1e529512f7a0/go.mod h1:vjAa3fPJMK33ipXTTO5xk9p3aOeyPFyrSKUCvbQTARk=
 github.com/k8s-school/ciux v0.0.1-rc8 h1:hjUH5DBto789gctykGdDnHcP56IE2OQWRO5AfNsoNgA=
 github.com/k8s-school/ciux v0.0.1-rc8/go.mod h1:tYTluY140iLb34FHbEuzukJUhCIE9mBpkprNk0cfjG8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=

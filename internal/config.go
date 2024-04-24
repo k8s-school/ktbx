@@ -22,9 +22,10 @@ const Kind string = "kind"
 const KindConfigFile string = "/tmp/kind-config.yaml"
 
 type KtbxConfig struct {
-	ExtraMountPath  string `mapstructure:"extramountpath" default:""`
-	LocalCertSANs   bool   `mapstructure:"localcertsans" default:"false"`
-	PrivateRegistry string `mapstructure:"privateregistry" default:""`
+	AuditPolicy     string `mapstructure:"auditPolicy" default:""`
+	ExtraMountPath  string `mapstructure:"extraMountPath" default:""`
+	LocalCertSANs   bool   `mapstructure:"localCertSans" default:"false"`
+	PrivateRegistry string `mapstructure:"privateRegistry" default:""`
 	Cni             string `mapstructure:"cni" default:""`
 	Workers         uint   `mapstructure:"workers" default:"3"`
 }
