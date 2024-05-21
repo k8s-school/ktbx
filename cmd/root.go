@@ -23,8 +23,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-
 var dryRun bool
 
 var (
@@ -71,7 +69,6 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVarP(&clusterName, "name", "n", "", "cluster name, default to 'kind'")
-
 }
 
 // setUpLogs set the log output ans the log level

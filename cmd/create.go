@@ -28,7 +28,6 @@ var createCmd = &cobra.Command{
 
 		internal.LogConfiguration()
 		createCluster()
-
 		// Write golang code to create a file inside a docker container using the ContainerExec operation of the docker API
 
 	},
@@ -95,7 +94,6 @@ func createCluster() {
 			slog.Error("Error while installing cni", "error", err)
 			os.Exit(1)
 		}
-
 	}
 
 	slog.Info("Wait for Kubernetes nodes to be up and running")

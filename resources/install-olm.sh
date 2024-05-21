@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-olm_version="v0.25.0"
+olm_version="v0.28.0"
 timeout_sec="600s"
 
 echo "Install operator-lifecycle-manager $olm_version"
