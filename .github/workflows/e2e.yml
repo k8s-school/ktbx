@@ -91,4 +91,4 @@ jobs:
           kubectl get nodes
       - name: Check audit logs
         run: |
-          docker exec -it -- kind-control-plane  cat /var/log/kubernetes/kube-apiserver-audit.log
+          docker exec -t -- kind-control-plane  cat /var/log/kubernetes/kube-apiserver-audit.log
