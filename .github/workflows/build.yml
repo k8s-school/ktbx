@@ -1,5 +1,5 @@
 ---
-name: "Integration tests"
+name: "Build"
 on:
   push:
   pull_request:

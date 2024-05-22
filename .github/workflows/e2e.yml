@@ -31,12 +31,12 @@ jobs:
           kubectl get nodes
       - name: Start nginx
         run: |
-          ./e2e/run-nginx.sh
+          ./itest/run-nginx.sh
       - name: Test nginx
         run: |
-          ./e2e/test-nginx.sh
-  check_audit_log:
-    name: Enable audit log on k8s api server
+          ./itest/test-nginx.sh
+  check_argo:
+    name: Check argoCD install
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-go@v3
@@ -68,22 +68,27 @@ jobs:
       - name: Install argo-workflows
         run: |
           ktbx install argowf
-          check_argo:
-            name: Install olm and argo on k8s
-            runs-on: ubuntu-22.04
-            steps:
-              - uses: actions/setup-go@v3
-                with:
-                  go-version: '^1.20.3'
-              - run: go version
-              - name: Checkout code
-                uses: actions/checkout@v2
-              - name: Build and install k8s-toolbox
-                run: |
-                  go install .
-              - name: Install k8s using kind
-                run: |
-                  ktbx install kind
-                  ktbx create --single
-                  kubectl get pods -n kube-system
-                  kubectl get nodes
+  check_audit_logs:
+    name: Enable audit log on k8s api server WIP
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.20.3'
+      - run: go version
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build and install k8s-toolbox
+        run: |
+          go install .
+      - name: Install k8s using kind
+        run: |
+          ktbx install kind
+          mkdir $HOME/.ktbx
+          cp ./e2e/dot-config-audit $HOME/.ktbx
+          ktbx create
+          kubectl get pods -n kube-system
+          kubectl get nodes
+      - name: Check audit logs
+        run: |
+          docker exec -it -- kind-control-plane  cat /var/log/kubernetes/kube-apiserver-audit.log
