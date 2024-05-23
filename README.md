@@ -17,6 +17,7 @@ Support `kind-v0.20.0` and `k8s-v1.25+`
 
 - go 1.21+
 - `sudo` access
+- [docker], [podman] or [nerdctl]
 
 ## Run kind on a workstation, in two lines of code
 
@@ -141,4 +142,7 @@ jobs:
 ```
 
 [kind]:https://github.com/kubernetes-sigs/kind
+[docker]: https://www.docker.com/
+[podman]: https://podman.io/
+[nerdctl]: https://github.com/containerd/nerdctl
 [<img src="http://k8s-school.fr/images/logo.svg" alt="K8s-school Logo, expertise et formation Kubernetes" height="50" />](https://k8s-school.fr)
