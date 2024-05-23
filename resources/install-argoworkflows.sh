@@ -25,7 +25,7 @@ echo "Install Argo client $ARGO_CLIENT_VERSION"
 if [ -e "$argo_bin" ]; then
     current_argo_version="$(argo version --short |  awk '{print $2}')"
     if [ "$current_argo_version" == "$ARGO_CLIENT_VERSION" ]; then
-        warning "argo client "$ARGO_CLIENT_VERSION" is already installed"
+        echo "WARN: argo client $ARGO_CLIENT_VERSION is already installed"
         exit 0
     fi
 fi
