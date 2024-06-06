@@ -44,5 +44,5 @@ var kindCmd = &cobra.Command{
 func init() {
 	installCmd.AddCommand(kindCmd)
 
-	kindCmd.Flags().StringVar(&kindVersion, "kind-version", "v0.20.0", "Kind version to install")
+	kindCmd.Flags().StringVar(&kindVersion, "kind-version", "v0.23.0", "Kind version to install")
 }
