@@ -7,7 +7,7 @@
 set -euxo pipefail
 
 olm_version="v0.28.0"
-timeout_sec="600s"
+timeout="60"
 
 echo "Install operator-lifecycle-manager $olm_version"
 
@@ -24,10 +24,11 @@ echo "Wait for operatorhubio-catalog pod to be ready"
 # and the 'kubectl wait' fails waiting for it, so a retry is needed
 counter=0
 max_retry=5
-while ! kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout="$timeout_sec"
+while ! kubectl wait -n olm pod --for=condition=Ready -l olm.catalogSource=operatorhubio-catalog --timeout="${timeout}s"
 do
     if [ $counter -eq $max_retry ]; then
         break
     fi
     counter=$((counter+1))
+    timeout=$((timeout+60))
 done
