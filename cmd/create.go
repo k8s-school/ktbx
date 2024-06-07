@@ -16,6 +16,8 @@ import (
 	"github.com/k8s-school/ktbx/resources"
 )
 
+var install []string
+
 // createCmd represents the create command
 var createCmd = &cobra.Command{
 	Use:   "create",
@@ -47,6 +49,8 @@ func init() {
 	auditlog := "auditlog"
 	createCmd.PersistentFlags().BoolP(auditlog, "a", false, "enable audit log inside API server, take precedence over configuration file 'auditlog' parameter")
 	viper.BindPFlag("kind."+auditlog, createCmd.PersistentFlags().Lookup(auditlog))
+
+	createCmd.PersistentFlags().StringSliceVarP(&install, "install", "i", []string{}, "install additional components (olm, argocd, argo-workflow)")
 }
 
 func createCluster() {
@@ -104,4 +108,24 @@ func createCluster() {
 		slog.Error("kubectl wait failed", "error", err)
 		os.Exit(1)
 	}
+
+	for _, i := range install {
+		switch i {
+		case "olm":
+			_, _, err = ExecCmd(resources.OlmInstallScript, false)
+		case "argocd":
+			_, _, err = ExecCmd(resources.ArgoCDInstallScript, false)
+		case "argowf":
+			_, _, err = ExecCmd(resources.ArgoWorkflowInstallScript, false)
+		case "helm":
+			_, _, err = ExecCmd(resources.HelmInstallScript, false)
+		default:
+			err = fmt.Errorf("unsupported component %s", i)
+		}
+		if err != nil {
+			slog.Error("Error while installing component", "error", err)
+			os.Exit(1)
+		}
+	}
+
 }
