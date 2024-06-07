@@ -7,6 +7,7 @@
 set -euxo pipefail
 
 olm_version="v0.28.0"
+timeout_long_sec="600s"
 timeout="60"
 
 echo "Install operator-lifecycle-manager $olm_version"
@@ -16,7 +17,7 @@ chmod +x /tmp/install.sh
 /tmp/install.sh "$olm_version"
 
 echo "Wait for operator-lifecycle-manager to be ready"
-kubectl rollout status -n olm deployment/olm-operator --timeout="$timeout_sec"
+kubectl rollout status -n olm deployment/olm-operator --timeout="$timeout_long_sec"
 
 echo "Wait for operatorhubio-catalog pod to be ready"
 
