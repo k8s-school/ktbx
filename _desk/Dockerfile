@@ -102,6 +102,6 @@ RUN $GOROOT/bin/go install -v github.com/k8s-school/clouder@v0.0.1-rc4
 RUN $GOROOT/bin/go install -v github.com/k8s-school/ink@v0.0.1-rc3
 
 # Install rbac-tools
-RUN curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash
+# RUN curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash
 
 COPY rootfs / 
