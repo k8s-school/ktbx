@@ -12,9 +12,10 @@ timeout="60"
 
 echo "Install operator-lifecycle-manager $olm_version"
 
-curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$olm_version/install.sh -o /tmp/install.sh
-chmod +x /tmp/install.sh
-/tmp/install.sh "$olm_version"
+tmp_dir=$(mktemp -d --suffix "-ktbx-olm")
+curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$olm_version/install.sh -o "$tmp_dir/install.sh"
+chmod +x "$tmp_dir/install.sh"
+"$tmp_dir/install.sh" "$olm_version"
 
 echo "Wait for operator-lifecycle-manager to be ready"
 kubectl rollout status -n olm deployment/olm-operator --timeout="$timeout_long_sec"
@@ -33,3 +34,5 @@ do
     counter=$((counter+1))
     timeout=$((timeout+60))
 done
+
+rm -r "$tmp_dir"

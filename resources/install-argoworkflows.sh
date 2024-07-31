@@ -22,15 +22,20 @@ echo "Install Argo client $ARGO_WORKFLOWS_VERSION"
 
 # If argo client exists, compare current version to desired one: kind version | awk '{print $2}'
 if [ -e "$argo_bin" ]; then
-    current_argo_version="$(argo version --short |  awk '{print $2}')"
-    if [ "$current_argo_version" == "$ARGO_WORKFLOWS_VERSION" ]; then
-        echo "WARN: argo client $ARGO_WORKFLOWS_VERSION is already installed"
-        exit 0
-    fi
+    current_version="$(argo version --short |  awk '{print $2}')"
+else
+    current_version=""
 fi
 
-echo "Install Argo-workflow CLI $ARGO_WORKFLOWS_VERSION"
-curl -sSL -o /tmp/argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/argo-linux-amd64.gz
-gunzip /tmp/argo-linux-amd64.gz
-sudo install -m 555 /tmp/argo-linux-amd64 /usr/local/bin/argo
-rm /tmp/argo-linux-amd64
+if [ "$current_version" == "$ARGO_WORKFLOWS_VERSION" ]; then
+    echo "WARN: argo client $ARGO_WORKFLOWS_VERSION is already installed"
+else
+    tmp_dir=$(mktemp -d --suffix "-ktbx-argowf")
+    echo "Install Argo-workflow CLI $ARGO_WORKFLOWS_VERSION"
+    curl -sSL -o "$tmp_dir"/argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/argo-linux-amd64.gz
+    gunzip "$tmp_dir"/argo-linux-amd64.gz
+    sudo install -m 555 "$tmp_dir"/argo-linux-amd64 /usr/local/bin/argo
+fi
+
+
+rm -r "$tmp_dir"
