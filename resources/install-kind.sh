@@ -33,6 +33,6 @@ else
   tmp_dir=$(mktemp -d --suffix "-ktbx-kind")
   curl -Lo "$tmp_dir/kind" https://github.com/kubernetes-sigs/kind/releases/download/"$KIND_VERSION"/kind-$OS-$ARCH
   sudo install -m 555 "$tmp_dir/kind" "$KIND_BIN"
+  rm -r "$tmp_dir"
 fi
 
-rm -r "$tmp_dir"
