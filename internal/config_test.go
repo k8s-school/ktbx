@@ -78,10 +78,11 @@ func TestGenerateKindConfigFile(t *testing.T) {
 	}
 
 	// Call the GenerateKindConfigFile function
-	GenerateKindConfigFile(config)
+	kindConfigFile, err := GenerateKindConfigFile(config)
+	require.NoError(err)
 
 	// Read the contents of the generated file
-	fileContents, err := os.ReadFile(KindConfigFile)
+	fileContents, err := os.ReadFile(kindConfigFile)
 	require.NoError(err)
 
 	// Assert the expected file contents

@@ -19,7 +19,7 @@ import (
 )
 
 const Kind string = "kind"
-const KindConfigFile string = "/tmp/kind-config.yaml"
+const KindConfigFilename string = "kind-config.yaml"
 
 type KtbxConfig struct {
 	AuditPolicy     string `mapstructure:"auditPolicy" default:""`
@@ -87,16 +87,28 @@ func GetConfig() KtbxConfig {
 	return *c
 }
 
-func GenerateKindConfigFile(c KtbxConfig) {
-	slog.Info("Generate kind configuration file", "file", KindConfigFile)
+func GenerateKindConfigFile(c KtbxConfig) (string, error) {
+	slog.Info("Generate kind configuration file", "file", KindConfigFilename)
 
-	f, err := os.Create(KindConfigFile)
-	cobra.CheckErr(err)
+	tmpdir, err := os.MkdirTemp("/tmp", "kind-config")
+	if err != nil {
+		slog.Error("unable to create temporary directory", "error", err)
+		return "", err
+	}
+
+	kindConfigFile := path.Join(tmpdir, KindConfigFilename)
+
+	f, err := os.Create(kindConfigFile)
+	if err != nil {
+		slog.Error("unable to create kind configuration file", "error", err)
+		return "", err
+	}
 	defer f.Close()
 
 	kindconfig := applyTemplate(c)
 	slog.Debug("kind configuration", "data", kindconfig)
 	f.WriteString(kindconfig)
+	return kindConfigFile, nil
 }
 
 func applyTemplate(sc KtbxConfig) string {

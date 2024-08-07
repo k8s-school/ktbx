@@ -64,7 +64,11 @@ func createCluster() {
 
 	slog.Debug("ktbx configuration", "data", c)
 
-	internal.GenerateKindConfigFile(c)
+	kindConfigFile, err := internal.GenerateKindConfigFile(c)
+	if err != nil {
+		slog.Error("unable to generate kind configuration file", "error", err)
+		os.Exit(1)
+	}
 
 	optName := ""
 	if clusterName != "" {
@@ -72,7 +76,7 @@ func createCluster() {
 	}
 
 	cmd_tpl := "%v create cluster --config %v%v"
-	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, internal.KindConfigFile, optName)
+	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, kindConfigFile, optName)
 
 	_, _, err = ExecCmd(cmd, false)
 	if err != nil {
