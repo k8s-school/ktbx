@@ -7,11 +7,23 @@
 
 set -euxo pipefail
 
-HELM_VERSION="3.14.4"
-curl -o /tmp/helm.tgz https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz
+helm_bin="/usr/local/bin/helm"
+helm_version="3.14.4"
 
-cd /tmp
-tar zxvf /tmp/helm.tgz
-rm /tmp/helm.tgz
-sudo install -m 555 /tmp/linux-amd64/helm /usr/local/bin/helm
-rm /tmp/linux-amd64/helm
+
+# If helm exists, compare current version to desired one
+if [ -e $helm_bin ]; then
+  current_version=$(helm version --short)
+else
+  current_version=""
+fi
+
+if  [[ $current_version =~ "$helm_version" ]]; then
+  echo "WARN: helm helm_version is already installed"
+else
+  tmp_dir=$(mktemp -d --suffix "-ktbx-helm")
+  curl -o "$tmp_dir"/helm.tgz https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz
+  tar -C "$tmp_dir" -zxvf "$tmp_dir"/helm.tgz
+  sudo install -m 555 "$tmp_dir"/linux-amd64/helm "$helm_bin"
+  rm -r "$tmp_dir"
+fi
