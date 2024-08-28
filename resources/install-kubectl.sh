@@ -19,7 +19,7 @@ test "$ARCH" = "x86_64" && ARCH="amd64"
 
 # If kind exists, compare current version to desired one
  if [ -e $KUBECTL_BIN ]; then
-    CURRENT_KUBECTL_VERSION=$(kubectl version --client --short | grep "^Client Version" | awk '{print $3}')
+    CURRENT_KUBECTL_VERSION=$(kubectl version --client | grep "^Client Version" | awk '{print $3}')
     if [ "$CURRENT_KUBECTL_VERSION" != "$KUBECTL_VERSION" ]; then
       sudo rm "$KUBECTL_BIN"
     fi
