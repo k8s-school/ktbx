@@ -7,7 +7,7 @@ set -euxo pipefail
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-KUBECTL_VERSION="v1.27.3"
+KUBECTL_VERSION="v1.30.0"
 KUBECTL_BIN="/usr/local/bin/kubectl"
 
 OS="$(uname -s)"
