@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const kindDefaultVersion = "v0.24.0"
+
 var kindVersion string
 
 type KindInstallConfig struct {
@@ -44,5 +46,5 @@ var kindCmd = &cobra.Command{
 func init() {
 	installCmd.AddCommand(kindCmd)
 
-	kindCmd.Flags().StringVar(&kindVersion, "kind-version", "v0.23.0", "Kind version to install")
+	kindCmd.Flags().StringVar(&kindVersion, "kind-version", kindDefaultVersion, "Kind version to install")
 }
