@@ -86,6 +86,7 @@ jobs:
           ktbx install kind
           mkdir $HOME/.ktbx
           cp ./e2e/dot-config-audit $HOME/.ktbx
+          cp ./e2e/audit-policy.yaml /tmp/audit-policy.yaml
           ktbx create
           kubectl get pods -n kube-system
           kubectl get nodes
