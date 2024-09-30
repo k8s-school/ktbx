@@ -76,6 +76,8 @@ var deleteCmd = &cobra.Command{
 			clusters := getClusterByPattern(clusterNamePattern)
 			slog.Debug("Cluster matches", "clusters", clusters)
 
+			// TODO!!! Delete the clusters
+
 		} else {
 
 			slog.Info("Delete kind cluster")
