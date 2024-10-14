@@ -34,7 +34,7 @@ ktbx create -s
 ktbx create
 
 # Run a k8s cluster with Calico CNI
-ktbx create -c
+ktbx create -c calico
 
 # Delete the kind cluster
 ktbx delete
