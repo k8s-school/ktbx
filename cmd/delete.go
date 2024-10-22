@@ -17,6 +17,37 @@ import (
 
 var clusterNamePattern string
 
+// deleteCmd represents the delete command
+var deleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete a kind cluster",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if clusterNamePattern != "" {
+			// Get the output of "kind get clusters"
+			// Loop over the output and delete the clusters that match the pattern
+			slog.Info("Delete kind cluster with pattern", "pattern", clusterNamePattern)
+			clusters := getClusterByPattern(clusterNamePattern)
+			slog.Debug("Cluster matches", "clusters", clusters)
+
+			for _, cluster := range clusters {
+				deleteCluster(cluster)
+			}
+
+		} else {
+			slog.Info("Delete kind cluster", "name", clusterName)
+			deleteCluster(clusterName)
+		}
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(deleteCmd)
+
+	pattern := "pattern"
+	deleteCmd.PersistentFlags().StringVarP(&clusterNamePattern, pattern, "p", "", "delete cluster by name regexp pattern")
+}
+
 func deleteCluster(clusterName string) {
 
 	optName := ""
@@ -61,34 +92,4 @@ func getClusterByPattern(pattern string) []string {
 
 	return clusterMatches
 
-}
-
-// deleteCmd represents the delete command
-var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete a kind cluster",
-	Run: func(cmd *cobra.Command, args []string) {
-
-		if clusterNamePattern != "" {
-			// Get the output of "kind get clusters"
-			// Loop over the output and delete the clusters that match the pattern
-			slog.Info("Delete kind cluster with pattern", "pattern", clusterNamePattern)
-			clusters := getClusterByPattern(clusterNamePattern)
-			slog.Debug("Cluster matches", "clusters", clusters)
-
-			// TODO!!! Delete the clusters
-
-		} else {
-
-			slog.Info("Delete kind cluster")
-			deleteCluster("")
-		}
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(deleteCmd)
-
-	pattern := "pattern"
-	deleteCmd.PersistentFlags().StringVarP(&clusterNamePattern, pattern, "p", "", "delete cluster by name regexp pattern")
 }

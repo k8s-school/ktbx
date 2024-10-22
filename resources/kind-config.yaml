@@ -16,7 +16,6 @@ nodes:
 - role: control-plane
   kubeadmConfigPatches:
   - |
-    apiVersion: kubeadm.k8s.io/v1beta3
     kind: ClusterConfiguration
     metadata:
       name: config
@@ -44,6 +43,7 @@ nodes:
       certSANs:
         - "127.0.0.1"
 	{{- end }}
+  {{- if .ExtraMountPath or .AuditPolicy }}
   extraMounts:
   {{- if .ExtraMountPath }}
   - hostPath: {{ .ExtraMountPath }}
@@ -54,10 +54,11 @@ nodes:
     containerPath: /etc/kubernetes/policies/audit-policy.yaml
     readOnly: true
   {{- end }}
+  {{- end }}
 {{- range $val := Iterate .Workers }}
 - role: worker
-  extraMounts:
   {{- if $.ExtraMountPath }}
+  extraMounts:
   - hostPath: {{ $.ExtraMountPath }}
     containerPath: /mnt/extra
   {{- end }}

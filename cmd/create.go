@@ -29,7 +29,7 @@ var createCmd = &cobra.Command{
 		fmt.Println("Create k8s cluster")
 
 		internal.LogConfiguration()
-		createCluster()
+		createCluster(clusterName)
 		// Write golang code to create a file inside a docker container using the ContainerExec operation of the docker API
 
 	},
@@ -53,7 +53,7 @@ func init() {
 	createCmd.PersistentFlags().StringSliceVarP(&install, "install", "i", []string{}, "install additional components (olm, argocd, argo-workflow)")
 }
 
-func createCluster() {
+func createCluster(clusterName string) {
 	_, err := exec.LookPath(internal.Kind)
 	if err != nil {
 		slog.Error("binary not found in PATH", "binary", internal.Kind)
