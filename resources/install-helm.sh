@@ -8,8 +8,7 @@
 set -euxo pipefail
 
 helm_bin="/usr/local/bin/helm"
-helm_version="3.14.4"
-
+helm_version="3.16.2"
 
 # If helm exists, compare current version to desired one
 if [ -e $helm_bin ]; then
@@ -19,7 +18,7 @@ else
 fi
 
 if  [[ $current_version =~ "$helm_version" ]]; then
-  echo "WARN: helm helm_version is already installed"
+  echo "WARN: helm $helm_version is already installed"
 else
   tmp_dir=$(mktemp -d --suffix "-ktbx-helm")
   curl -o "$tmp_dir"/helm.tgz https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz

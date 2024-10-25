@@ -37,8 +37,6 @@ var rootCmd = &cobra.Command{
 	Long: `Creates kind-based Kubernetes cluster
 
 Examples:
-  # Create a configuration file for kind
-  ktbx configgen
 
   # Create a single-node cluster using calico CNI
   ktbx create --single -c calico
