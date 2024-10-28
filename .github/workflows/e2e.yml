@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         cni: [calico, cilium]
-    name: Install k8s and run tests
+    name: Check CNI install
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-go@v3
@@ -69,7 +69,7 @@ jobs:
         run: |
           ktbx install argowf
   check_audit_logs:
-    name: Enable audit log on k8s api server WIP
+    name: Enable api server audit log
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-go@v3
