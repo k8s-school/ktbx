@@ -31,10 +31,10 @@ jobs:
           kubectl get nodes
       - name: Start nginx
         run: |
-          ./itest/run-nginx.sh
+          ./e2e/run-nginx.sh
       - name: Test nginx
         run: |
-          ./itest/test-nginx.sh
+          ./e2e/test-nginx.sh
   check_argo:
     name: Check argoCD install
     runs-on: ubuntu-22.04

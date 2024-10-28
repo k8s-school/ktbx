@@ -10,6 +10,9 @@ var ArgoCDInstallScript string
 //go:embed install-argoworkflows.sh
 var ArgoWorkflowInstallScript string
 
+//go:embed install-calico.sh
+var CalicoInstallScript string
+
 //go:embed install-cilium.sh
 var CiliumInstallScript string
 

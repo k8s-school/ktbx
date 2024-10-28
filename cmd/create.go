@@ -84,9 +84,7 @@ func createCluster(clusterName string) {
 
 		switch c.Cni {
 		case "calico":
-			cmd = `kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/tigera-operator.yaml &&
-			kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.5/manifests/custom-resources.yaml`
-			_, _, err = ExecCmd(cmd, false)
+			_, _, err = ExecCmd(resources.CiliumInstallScript, false)
 		case "cilium":
 			_, _, err = ExecCmd(resources.CiliumInstallScript, false)
 
