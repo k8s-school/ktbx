@@ -29,12 +29,9 @@ jobs:
           ktbx create --single -c ${{ matrix.cni }}
           kubectl get pods -n kube-system
           kubectl get nodes
-      - name: Start nginx
+      - name: Start and test nginx
         run: |
           ./e2e/run-nginx.sh
-      - name: Test nginx
-        run: |
-          ./e2e/test-nginx.sh
   check_argo:
     name: Check argoCD install
     runs-on: ubuntu-22.04
