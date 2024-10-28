@@ -31,7 +31,6 @@ var createCmd = &cobra.Command{
 		internal.LogConfiguration()
 		createCluster(clusterName)
 		// Write golang code to create a file inside a docker container using the ContainerExec operation of the docker API
-
 	},
 }
 
@@ -45,10 +44,6 @@ func init() {
 	cni := "cni"
 	createCmd.PersistentFlags().StringP(cni, "c", "", "install custom CNI (cilium, calico), take precedence over configuration file 'cni' parameter")
 	viper.BindPFlag("kind."+cni, createCmd.PersistentFlags().Lookup(cni))
-
-	auditlog := "auditlog"
-	createCmd.PersistentFlags().BoolP(auditlog, "a", false, "enable audit log inside API server, take precedence over configuration file 'auditlog' parameter")
-	viper.BindPFlag("kind."+auditlog, createCmd.PersistentFlags().Lookup(auditlog))
 
 	createCmd.PersistentFlags().StringSliceVarP(&install, "install", "i", []string{}, "install additional components (olm, argocd, argo-workflow)")
 }
@@ -131,5 +126,4 @@ func createCluster(clusterName string) {
 			os.Exit(1)
 		}
 	}
-
 }

@@ -53,7 +53,7 @@ func viperUnmarshalKey(key string, out interface{}) error {
 }
 
 // FormatTemplate formats a string using a template and a struct.
-func FormatTemplate(tplStr string, v interface{}) string {
+func FormatTemplate(tplStr string, v interface{}) (string, error) {
 
 	funcMap := template.FuncMap{
 		"Iterate": func(count uint) []uint {
@@ -73,7 +73,7 @@ func FormatTemplate(tplStr string, v interface{}) string {
 	if err != nil {
 		slog.Error("failed formatting string", "string", tplStr, "erro", err)
 	}
-	return b.String()
+	return b.String(), err
 }
 
 func GetConfig() KtbxConfig {
@@ -105,18 +105,18 @@ func GenerateKindConfigFile(c KtbxConfig) (string, error) {
 	}
 	defer f.Close()
 
-	kindconfig := applyTemplate(c)
+	kindconfig, err := applyTemplate(c)
 	slog.Debug("kind configuration", "data", kindconfig)
 	f.WriteString(kindconfig)
-	return kindConfigFile, nil
+	return kindConfigFile, err
 }
 
-func applyTemplate(sc KtbxConfig) string {
+func applyTemplate(sc KtbxConfig) (string, error) {
 
 	// TODO check https://github.com/helm/helm/blob/main/pkg/chartutil/values.go
 
-	kindconfig := FormatTemplate(resources.KindConfigTemplate, &sc)
-	return kindconfig
+	kindconfig, err := FormatTemplate(resources.KindConfigTemplate, &sc)
+	return kindconfig, err
 }
 
 // readConfig reads in config file and ENV variables if set.

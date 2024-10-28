@@ -33,9 +33,13 @@ var kindCmd = &cobra.Command{
 			KindVersion: kindVersion,
 		}
 
-		script := internal.FormatTemplate(resources.KindInstallScript, k)
+		script, err := internal.FormatTemplate(resources.KindInstallScript, k)
+		if err != nil {
+			slog.Error("Error while formatting kind install script", "error", err)
+			os.Exit(1)
+		}
 
-		_, _, err := ExecCmd(script, false)
+		_, _, err = ExecCmd(script, false)
 		if err != nil {
 			slog.Error("Error while installing kind", "error", err)
 			os.Exit(1)

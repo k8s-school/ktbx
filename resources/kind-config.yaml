@@ -44,7 +44,7 @@ nodes:
       certSANs:
         - "127.0.0.1"
 	{{- end }}
-  {{- if .ExtraMountPath or .AuditPolicy }}
+  {{- if or .ExtraMountPath .AuditPolicy }}
   extraMounts:
   {{- if .ExtraMountPath }}
   - hostPath: {{ .ExtraMountPath }}
