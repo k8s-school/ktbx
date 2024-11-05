@@ -55,7 +55,11 @@ func createCluster(clusterName string) {
 		os.Exit(1)
 	}
 
-	c := internal.GetConfig()
+	c, err := internal.GetConfig()
+	if err != nil {
+		slog.Error("unable to get ktbx configuration", "error", err)
+		os.Exit(1)
+	}
 
 	slog.Debug("ktbx configuration", "data", c)
 

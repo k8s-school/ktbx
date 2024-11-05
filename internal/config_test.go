@@ -50,11 +50,11 @@ func TestGetConfig(t *testing.T) {
 
 	require := require.New(t)
 	ReadConfig()
-	c := GetConfig()
+	c, err := GetConfig()
 	t.Logf("Config: %+v", c)
+	require.NoError(err)
 	require.Equal(uint(1), c.Workers)
 	require.Equal("", c.Cni)
-
 }
 func TestGenerateKindConfigFile(t *testing.T) {
 	teardownSuite := setupSuite(t)

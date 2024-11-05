@@ -4,6 +4,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package internal
 
 import (
+	"errors"
 	"os"
 	"path"
 	"strings"
@@ -76,15 +77,32 @@ func FormatTemplate(tplStr string, v interface{}) (string, error) {
 	return b.String(), err
 }
 
-func GetConfig() KtbxConfig {
+func GetConfig() (KtbxConfig, error) {
 	c := new(KtbxConfig)
 	defaults.SetDefaults(c)
 	err := viperUnmarshalKey(Kind, c)
-	cobra.CheckErr(err)
+	if err != nil {
+		slog.Error("unable to unmarshal ktbx configuration", "error", err)
+		return *c, err
+	}
+
 	if viper.GetBool("single") {
 		c.Workers = 0
 	}
-	return *c
+
+	info, err := os.Stat(c.AuditPolicy)
+	if err != nil {
+		slog.Error("Audit policy file not found", "file", c.AuditPolicy, "error", err)
+		return *c, errors.New("audit policy file not found: " + c.AuditPolicy)
+	}
+
+	if info.IsDir() {
+		slog.Error("Audit policy file is a directory", "file", c.AuditPolicy)
+		// return error
+		return *c, errors.New("audit policy file is a directory: " + c.AuditPolicy)
+	}
+
+	return *c, nil
 }
 
 func GenerateKindConfigFile(c KtbxConfig) (string, error) {

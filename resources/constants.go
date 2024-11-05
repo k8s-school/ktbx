@@ -19,6 +19,9 @@ var CiliumInstallScript string
 //go:embed desk.sh
 var DeskRunScript string
 
+//go:embed install-falco.sh
+var FalcoInstallScript string
+
 //go:embed install-helm.sh
 var HelmInstallScript string
 
