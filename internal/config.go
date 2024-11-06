@@ -90,16 +90,18 @@ func GetConfig() (KtbxConfig, error) {
 		c.Workers = 0
 	}
 
-	info, err := os.Stat(c.AuditPolicy)
-	if err != nil {
-		slog.Error("Audit policy file not found", "file", c.AuditPolicy, "error", err)
-		return *c, errors.New("audit policy file not found: " + c.AuditPolicy)
-	}
+	if c.AuditPolicy != "" {
+		info, err := os.Stat(c.AuditPolicy)
+		if err != nil {
+			slog.Error("Audit policy file not found", "file", c.AuditPolicy, "error", err)
+			return *c, errors.New("audit policy file not found: " + c.AuditPolicy)
+		}
 
-	if info.IsDir() {
-		slog.Error("Audit policy file is a directory", "file", c.AuditPolicy)
-		// return error
-		return *c, errors.New("audit policy file is a directory: " + c.AuditPolicy)
+		if info.IsDir() {
+			slog.Error("Audit policy file is a directory", "file", c.AuditPolicy)
+			// return error
+			return *c, errors.New("audit policy file is a directory: " + c.AuditPolicy)
+		}
 	}
 
 	return *c, nil

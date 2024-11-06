@@ -14,7 +14,7 @@ func ExecCmd(command string, interactive bool) (string, string, error) {
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if !dryRun {
-		slog.Info("Launch command", "command", command)
+		slog.Info("Run shell", "command", command)
 		cmd := exec.Command(ShellToUse, "-c", command)
 		if interactive {
 			cmd.Stdin = os.Stdin

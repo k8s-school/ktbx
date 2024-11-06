@@ -74,7 +74,12 @@ func createCluster(clusterName string) {
 		optName = " --name " + clusterName
 	}
 
-	cmd_tpl := "%v create cluster --config %v%v"
+	verbose_opt := ""
+	if verbosity > 0 {
+		verbose_opt = " --verbosity " + fmt.Sprintf("%d", verbosity)
+	}
+
+	cmd_tpl := "%v create cluster --config %v%v" + verbose_opt
 	cmd := fmt.Sprintf(cmd_tpl, internal.Kind, kindConfigFile, optName)
 
 	_, _, err = ExecCmd(cmd, false)
@@ -103,7 +108,6 @@ func createCluster(clusterName string) {
 
 	slog.Info("Wait for Kubernetes nodes to be up and running")
 	cmd = "kubectl wait --timeout=180s --for=condition=Ready node --all"
-	ExecCmd(cmd, false)
 	_, _, err = ExecCmd(cmd, false)
 	if err != nil {
 		slog.Error("kubectl wait failed", "error", err)
