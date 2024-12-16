@@ -93,7 +93,7 @@ func createCluster(clusterName string) {
 
 		switch c.Cni {
 		case "calico":
-			_, _, err = ExecCmd(resources.CiliumInstallScript, false)
+			_, _, err = ExecCmd(resources.CalicoInstallScript, false)
 		case "cilium":
 			_, _, err = ExecCmd(resources.CiliumInstallScript, false)
 

@@ -21,4 +21,4 @@ echo "Check that the Falco pods are running"
 kubectl get pods -n falco
 
 echo "Falco pod(s) might need a few seconds to start. Wait until they are ready..."
-kubectl wait pods --for=condition=Ready --all -n falco
+kubectl wait pods --for=condition=Ready --all -n falco --timeout=600s
