@@ -25,7 +25,7 @@ RUN sed -i 's/^# *\(en_US.UTF-8\)/\1/' /etc/locale.gen
 RUN locale-gen
 
 # Install helm
-ENV HELM_VERSION v3.10.3
+ENV HELM_VERSION v3.16.2
 RUN curl -sL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash -s -- --version "$HELM_VERSION"
 
 # Install argo client
@@ -35,7 +35,7 @@ RUN git clone --depth 1 -b "$ARGOPROJ_HELPER_VERSION" --single-branch https://gi
 RUN "$ARGOPROJ_SRC"/argo-client-install.sh
 
 # Install kubectl
-ENV KUBECTL_VERSION 1.25.0
+ENV KUBECTL_VERSION 1.30.0
 RUN wget -O /usr/local/bin/kubectl \
     https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x /usr/local/bin/kubectl
@@ -49,16 +49,7 @@ RUN wget -O /tmp/kustomize.tgz \
     chmod +x kustomize && \
     mv kustomize /usr/local/bin/kustomize
 
-# Install Stern
-ENV STERN_VERSION 1.22.0
-RUN wget -O /tmp/stern.tgz \
-    https://github.com/stern/stern/releases/download/v${STERN_VERSION}/stern_${STERN_VERSION}_linux_amd64.tar.gz && \
-    tar zxvf /tmp/stern.tgz && \
-    rm /tmp/stern.tgz && \
-    chmod +x stern && \
-    mv stern /usr/local/bin/stern
-
-ENV GO_VERSION 1.19.5
+ENV GO_VERSION 1.23.4
 ENV GO_PKG go${GO_VERSION}.linux-amd64.tar.gz
 RUN wget https://dl.google.com/go/$GO_PKG && \
     tar -xvf $GO_PKG && \
@@ -66,6 +57,10 @@ RUN wget https://dl.google.com/go/$GO_PKG && \
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
+
+# Install Stern
+ENV STERN_VERSION 1.22.0
+RUN go install github.com/stern/stern@$STERN_VERSION
 
 RUN wget -O /etc/kubectl_aliases https://raw.githubusercontent.com/ahmetb/kubectl-alias/master/.kubectl_aliases
 
@@ -75,20 +70,13 @@ RUN echo "Build full k8s-toolbox"
 # Install Google cloud SDK
 RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - && apt-get update -y && apt-get install google-cloud-cli google-cloud-sdk-gke-gcloud-auth-plugin -y
 
-# Install kubeval
-ENV KUBEVAL_VERSION 0.15.0
-RUN wget https://github.com/garethr/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz && \
-    tar xf kubeval-linux-amd64.tar.gz && \
-    mv kubeval /usr/local/bin && \
-    rm kubeval-linux-amd64.tar.gz
+# Install kubesec
+ENV KUBESEC_VERSION v2.14.2
+RUN go install github.com/controlplaneio/kubesec/v2@${KUBESEC_VERSION}
 
-# Install cfssl
-RUN wget -q --show-progress --https-only --timestamping \
-    https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
-    https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 && \
-    chmod o+x cfssl_linux-amd64 cfssljson_linux-amd64 && \
-    mv cfssl_linux-amd64 /usr/local/bin/cfssl && \
-    mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+# Install kubelinter
+ENV KUBE_LINTER v0.7.1
+RUN go install golang.stackrox.io/kube-linter/cmd/kube-linter@${KUBE_LINTER}
 
 # Install k9s
 # RUN curl -L -o /tmp/k9s_Linux_x86_64.tar.gz "https://github.com/derailed/k9s/releases/download/v0.26.5/k9s_Linux_x86_64.tar.gz" && tar -xzf /tmp/k9s_Linux_x86_64.tar.gz && chmod +x "/tmp/k9s" && sudo mv "/tmp/k9s" "/usr/local/bin/k9s"
@@ -104,4 +92,4 @@ RUN $GOROOT/bin/go install -v github.com/k8s-school/ink@v0.0.1-rc3
 # Install rbac-tools
 # RUN curl https://raw.githubusercontent.com/alcideio/rbac-tool/master/download.sh | bash
 
-COPY rootfs / 
+COPY rootfs /
