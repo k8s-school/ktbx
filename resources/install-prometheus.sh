@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-PROMETHEUS_CHART_VERSION="65.4.0"
+PROMETHEUS_CHART_VERSION="69.3.0"
 
 NS="monitoring"
 
@@ -27,20 +27,9 @@ prometheus:
           resources:
             requests:
               storage: 50Gi
-    podMonitorSelector:
-      matchLabels:
-        monitored: "true"
-    podMonitorNamespaceSelector:
-      matchLabels:
-        monitored: "true"
-    serviceMonitorSelector:
-      matchLabels:
-        monitored: "true"
-    serviceMonitorNamespaceSelector:
-      matchLabels:
-         monitored: "true"
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
 EOF
-
 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
 helm repo update
