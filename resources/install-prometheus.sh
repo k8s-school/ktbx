@@ -6,7 +6,7 @@
 
 set -euxo pipefail
 
-PROMETHEUS_CHART_VERSION="69.3.0"
+PROMETHEUS_CHART_VERSION="70.7.0"
 
 NS="monitoring"
 
