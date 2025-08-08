@@ -8,8 +8,8 @@ set -euxo pipefail
 
 # Retrieve latest Cilium cli version with:
 # curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
-CILIUM_CLI_VERSION="v0.16.4"
-CILIUM_VERSION="1.16.3"
+CILIUM_CLI_VERSION="v0.18.6"
+CILIUM_VERSION="1.18.0"
 
 # Install cilium cli
 CLI_ARCH=amd64
@@ -20,11 +20,7 @@ sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
 rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
 # Install cilium
-helm repo add cilium https://helm.cilium.io/
-helm install cilium cilium/cilium --version $CILIUM_VERSION \
-   --namespace kube-system \
-   --set image.pullPolicy=IfNotPresent \
-   --set ipam.mode=kubernetes
+cilium install --version ${CILIUM_VERSION}
 
 echo "Wait for cilium daemonset to be ready"
 kubectl rollout status -n kube-system --timeout=600s daemonset/cilium
