@@ -15,7 +15,7 @@ complete -F __start_kubectl k
 # function kubectl() { echo "+ kubectl $@"; command kubectl $@; }
 
 alias ssh="gcloud compute ssh"
-alias kshell='kubectl run -i --rm --tty shell --image=ubuntu -- bash'
+alias kshell='kubectl run -i --rm --tty shell --image=ubuntu:22.04 -- bash'
 alias ll="ls -la"
 alias gst="git status"
 alias gc="git commit"
