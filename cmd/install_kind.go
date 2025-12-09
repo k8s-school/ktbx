@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const kindDefaultVersion = "v0.27.0"
+const kindDefaultVersion = "v0.30.0"
 
 var kindVersion string
 
