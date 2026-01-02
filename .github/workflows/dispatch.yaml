@@ -1,173 +1,37 @@
-name: Generic Repository Dispatch Handler
+name: "e2e: platform=k8s, survey=ztf, science=true, infra=self-hosted"
 
 on:
   repository_dispatch:
-    types:
-      - test-dispatch
-      - test-dispatch-with-artifacts
-      - build-and-test
-      - deploy-test
-      - custom-action
-
-env:
-  # Default values that can be overridden by client payload
-  DEFAULT_GO_VERSION: '1.21'
-  DEFAULT_NODE_VERSION: '20'
-  DEFAULT_PYTHON_VERSION: '3.11'
+    types: [e2e-science]
 
 jobs:
-  dispatch-handler:
-    runs-on: ${{ github.event.client_payload.runner || 'ubuntu-latest' }}
-
+  e2e-science:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.client_payload.ref || github.ref }}
-
-      - name: Display dispatch event information
-        run: |
-          echo "Repository dispatch received!"
-          echo "Event type: ${{ github.event.action }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "Ref: ${{ github.event.client_payload.ref || github.ref }}"
-          echo "Client payload: ${{ toJson(github.event.client_payload) }}"
-
-      - name: Setup environment variables
-        run: |
-          # Set environment variables from client payload with defaults
-          echo "PROJECT_NAME=${{ github.event.client_payload.project_name || github.event.repository.name }}" >> $GITHUB_ENV
-          echo "BUILD_TYPE=${{ github.event.client_payload.build_type || 'test' }}" >> $GITHUB_ENV
-          echo "ENVIRONMENT=${{ github.event.client_payload.environment || 'development' }}" >> $GITHUB_ENV
-
-      - name: Setup Go (if requested)
-        if: github.event.client_payload.setup_go == 'true' || github.event.client_payload.languages.go == 'true'
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ github.event.client_payload.go_version || env.DEFAULT_GO_VERSION }}
-
-      - name: Setup Node.js (if requested)
-        if: github.event.client_payload.setup_node == 'true' || github.event.client_payload.languages.node == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ github.event.client_payload.node_version || env.DEFAULT_NODE_VERSION }}
-
-      - name: Setup Python (if requested)
-        if: github.event.client_payload.setup_python == 'true' || github.event.client_payload.languages.python == 'true'
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ github.event.client_payload.python_version || env.DEFAULT_PYTHON_VERSION }}
-
-      - name: Display artifacts information
-        if: github.event.client_payload.artifacts
-        run: |
-          echo "Artifacts received:"
-          echo "${{ toJson(github.event.client_payload.artifacts) }}"
-
-      - name: Extract and process artifacts
-        if: github.event.client_payload.artifacts
-        run: |
-          mkdir -p artifacts
-
-          # Extract all artifact types dynamically
-          if echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -e 'to_entries[]' > /dev/null; then
-            for artifact in $(echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'to_entries[] | "\(.key):\(.value.type):\(.value.content)"'); do
-              filename=$(echo $artifact | cut -d: -f1)
-              type=$(echo $artifact | cut -d: -f2)
-              content=$(echo $artifact | cut -d: -f3-)
-
-              echo "Processing artifact: $filename (type: $type)"
-
-              # Handle different content encodings
-              if echo "$content" | base64 -d > /dev/null 2>&1; then
-                echo "$content" | base64 -d > "artifacts/$filename"
-              else
-                echo "$content" > "artifacts/$filename"
-              fi
-
-              echo "Extracted: $filename"
-            done
-          fi
-
-          # Save metadata if present
-          if echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -e '.metadata' > /dev/null; then
-            echo '${{ toJson(github.event.client_payload.artifacts.metadata) }}' > artifacts/metadata.json
-            echo "Extracted: metadata.json"
-          fi
-
-          ls -la artifacts/ || echo "No artifacts directory created"
-
-      - name: Set artifact name
-        if: github.event.client_payload.artifacts
-        run: |
-          # Use provided name or generate default based on project and timestamp
-          ARTIFACT_NAME="${{ github.event.client_payload.artifact_name }}"
-          if [ -z "$ARTIFACT_NAME" ]; then
-            TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-            ARTIFACT_NAME="${{ env.PROJECT_NAME }}-${{ github.event.action }}-${TIMESTAMP}"
-          fi
-          echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
-          echo "Artifact name will be: ${ARTIFACT_NAME}"
-
-      - name: Upload artifacts to GitHub Actions
-        if: github.event.client_payload.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: artifacts/
-
-      - name: Execute custom commands
-        if: github.event.client_payload.commands
-        run: |
-          echo "Executing custom commands..."
-          echo '${{ github.event.client_payload.commands }}' | base64 -d | bash
-
-      - name: Run default action based on dispatch type
-        run: |
-          case "${{ github.event.action }}" in
-            "test-dispatch")
-              echo "Running basic test dispatch for ${{ env.PROJECT_NAME }}"
-              echo "Environment: ${{ env.ENVIRONMENT }}"
-              ;;
-            "build-and-test")
-              echo "Running build and test workflow for ${{ env.PROJECT_NAME }}"
-              if [ -f "Makefile" ]; then
-                make test || echo "Make test not available"
-              elif [ -f "package.json" ]; then
-                npm test || echo "NPM test not available"
-              elif [ -f "go.mod" ]; then
-                go test ./... || echo "Go test not available"
-              else
-                echo "No recognized build system found"
-              fi
-              ;;
-            "deploy-test")
-              echo "Running deployment test for ${{ env.PROJECT_NAME }}"
-              echo "Target environment: ${{ env.ENVIRONMENT }}"
-              ;;
-            "custom-action")
-              echo "Custom action triggered for ${{ env.PROJECT_NAME }}"
-              echo "Additional logic can be added here"
-              ;;
-            *)
-              echo "Unknown dispatch type: ${{ github.event.action }}"
-              echo "Available types: test-dispatch, build-and-test, deploy-test, custom-action"
-              ;;
-          esac
-
-      - name: Display environment info
-        run: |
-          echo "=== Environment Information ==="
-          echo "Project: ${{ env.PROJECT_NAME }}"
-          echo "Build Type: ${{ env.BUILD_TYPE }}"
-          echo "Environment: ${{ env.ENVIRONMENT }}"
-          echo "Runner: ${{ runner.os }}"
-          if command -v go &> /dev/null; then
-            echo "Go version: $(go version)"
-          fi
-          if command -v node &> /dev/null; then
-            echo "Node version: $(node --version)"
-          fi
-          if command -v python3 &> /dev/null; then
-            echo "Python version: $(python3 --version)"
-          fi
+    - name: build
+      run: |
+        image="${{ github.event.client_payload.image }}"
+        if [ "${{ github.event.client_payload.build }}" == "true" ]; then
+          echo "build success for image $image"
+        else
+          echo "build failed for image $image"
+          exit 1
+        fi
+    - name: e2e
+      run: |
+        cluster="${{ github.event.client_payload.cluster }}"
+        if [ "${{ github.event.client_payload.e2e }}" == "true" ]; then
+          echo "Succeed to run e2e tests on cluster $cluster"
+        else
+          echo "Failed to run e2e tests on cluster $cluster"
+          exit 1
+        fi
+    - name: push
+      run: |
+        image="${{ github.event.client_payload.image }}"
+        if [ "${{ github.event.client_payload.push }}" == "true" ]; then
+          echo "Succeed in pushing image $image"
+        else
+          echo "Failed to push image $image"
+          exit 1
+        fi
