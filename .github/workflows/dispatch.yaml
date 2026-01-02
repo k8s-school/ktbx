@@ -2,7 +2,7 @@ name: "e2e: platform=k8s, survey=ztf, science=true, infra=self-hosted"
 
 on:
   repository_dispatch:
-    types: [e2e-science]
+    types: [dispatch-with-artifacts]
 
 jobs:
   e2e-science:
