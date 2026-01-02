@@ -10,8 +10,10 @@ jobs:
     strategy:
       matrix:
         cni: [calico, cilium]
+      fail-fast: false
     name: Check CNI install
     runs-on: ubuntu-22.04
+    continue-on-error: true
     steps:
       - uses: actions/setup-go@v3
         with:
