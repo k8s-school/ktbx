@@ -1,37 +1,151 @@
-name: "e2e: platform=k8s, survey=ztf, science=true, infra=self-hosted"
+name: "Home-CI External Test Results Processing"
 
 on:
   repository_dispatch:
-    types: [dispatch-with-artifacts]
+    types: [dispatch-with-artifacts, test-dispatch-with-artifacts]
 
 jobs:
-  e2e-science:
+  process-test-results:
     runs-on: ubuntu-latest
     steps:
-    - name: build
+    - name: Display test metadata
       run: |
-        image="${{ github.event.client_payload.image }}"
-        if [ "${{ github.event.client_payload.build }}" == "true" ]; then
-          echo "build success for image $image"
-        else
-          echo "build failed for image $image"
-          exit 1
-        fi
-    - name: e2e
+        echo "🔍 Processing test results from home-ci"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📍 Branch: ${{ github.event.client_payload.branch }}"
+        echo "📍 Commit: ${{ github.event.client_payload.commit }}"
+        echo "📍 Success: ${{ github.event.client_payload.success }}"
+        echo "📍 Source: ${{ github.event.client_payload.source }}"
+        echo "📍 Timestamp: ${{ github.event.client_payload.timestamp }}"
+        echo "📍 Artifact: ${{ github.event.client_payload.artifact_name }}"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    - name: Process test logs
       run: |
-        cluster="${{ github.event.client_payload.cluster }}"
-        if [ "${{ github.event.client_payload.e2e }}" == "true" ]; then
-          echo "Succeed to run e2e tests on cluster $cluster"
+        echo "📋 Processing test execution logs..."
+
+        # Check if artifacts exist and process them
+        if [ "${{ toJson(github.event.client_payload.artifacts) }}" != "null" ]; then
+          echo "✅ Test artifacts found"
+
+          # Create artifacts directory
+          mkdir -p test-artifacts
+
+          # List available artifacts
+          echo "📦 Available artifacts:"
+          echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'keys[]' | while read artifact; do
+            echo "  - $artifact"
+          done
+
         else
-          echo "Failed to run e2e tests on cluster $cluster"
-          exit 1
+          echo "⚠️  No artifacts found in payload"
         fi
-    - name: push
+
+    - name: Decode and save test logs
+      if: github.event.client_payload.artifacts
       run: |
-        image="${{ github.event.client_payload.image }}"
-        if [ "${{ github.event.client_payload.push }}" == "true" ]; then
-          echo "Succeed in pushing image $image"
+        echo "💾 Extracting test logs..."
+
+        # Extract log files (find files with .log extension in artifacts)
+        echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r '
+          to_entries[] |
+          select(.key | endswith(".log")) |
+          "LOG_FILE=\(.key)\nLOG_CONTENT=\(.value.content)"
+        ' > log_vars.env
+
+        if [ -f log_vars.env ] && [ -s log_vars.env ]; then
+          source log_vars.env
+
+          # Decode and save log content
+          if [ ! -z "$LOG_CONTENT" ] && [ "$LOG_CONTENT" != "null" ]; then
+            echo "$LOG_CONTENT" | base64 -d > "test-artifacts/$LOG_FILE"
+            echo "✅ Saved log file: test-artifacts/$LOG_FILE"
+
+            # Show log summary
+            echo ""
+            echo "📊 Log file summary:"
+            echo "  Size: $(wc -c < test-artifacts/$LOG_FILE) bytes"
+            echo "  Lines: $(wc -l < test-artifacts/$LOG_FILE) lines"
+
+            # Show key information from logs
+            echo ""
+            echo "🔍 Test execution highlights:"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            # Extract key information
+            if grep -q "Install kind" "test-artifacts/$LOG_FILE"; then
+              echo "  ✅ Kind installation step found"
+            fi
+
+            if grep -q "Create k8s cluster" "test-artifacts/$LOG_FILE"; then
+              echo "  ✅ Kubernetes cluster creation step found"
+            fi
+
+            if grep -q "kubectl get" "test-artifacts/$LOG_FILE"; then
+              echo "  ✅ Kubernetes verification commands found"
+            fi
+
+            # Show any errors
+            if grep -qi "error\|fail" "test-artifacts/$LOG_FILE"; then
+              echo "  ⚠️  Errors or failures detected:"
+              grep -i "error\|fail" "test-artifacts/$LOG_FILE" | head -3 | sed 's/^/     /'
+            fi
+
+            # Show success indicators
+            if grep -q "Ready.*control-plane" "test-artifacts/$LOG_FILE"; then
+              echo "  ✅ Kubernetes control plane ready"
+            fi
+
+          else
+            echo "⚠️  Log content is empty or null"
+          fi
         else
-          echo "Failed to push image $image"
-          exit 1
+          echo "ℹ️  No log files found in artifacts"
         fi
+
+    - name: Create test result summary
+      run: |
+        echo "📈 Creating test result summary..."
+
+        # Determine status emoji and message
+        if [ "${{ github.event.client_payload.success }}" == "true" ]; then
+          STATUS_EMOJI="✅"
+          STATUS_MSG="SUCCESS"
+          STATUS_COLOR="🟢"
+        else
+          STATUS_EMOJI="❌"
+          STATUS_MSG="FAILURE"
+          STATUS_COLOR="🔴"
+        fi
+
+        echo ""
+        echo "╭─────────────────────────────────────────╮"
+        echo "│           TEST RESULT SUMMARY           │"
+        echo "├─────────────────────────────────────────┤"
+        echo "│ Status: $STATUS_COLOR $STATUS_EMOJI $STATUS_MSG"
+        echo "│ Branch: ${{ github.event.client_payload.branch }}"
+        echo "│ Commit: ${{ github.event.client_payload.commit }}"
+        echo "│ Source: ${{ github.event.client_payload.source }}"
+        echo "╰─────────────────────────────────────────╯"
+
+        # Create summary for GitHub Actions summary
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        ## $STATUS_EMOJI External Test Results - $STATUS_MSG
+
+        **Test Details:**
+        - **Status**: $STATUS_EMOJI $STATUS_MSG
+        - **Branch**: \`${{ github.event.client_payload.branch }}\`
+        - **Commit**: \`${{ github.event.client_payload.commit }}\`
+        - **Source**: ${{ github.event.client_payload.source }}
+        - **Timestamp**: $(date -d @${{ github.event.client_payload.timestamp }} 2>/dev/null || echo "${{ github.event.client_payload.timestamp }}")
+
+        **Artifact**: ${{ github.event.client_payload.artifact_name }}
+        EOF
+
+    - name: Upload artifacts
+      if: github.event.client_payload.artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: external-test-results-${{ github.event.client_payload.artifact_name }}
+        path: test-artifacts/
+        retention-days: 30
