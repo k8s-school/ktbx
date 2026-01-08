@@ -8,6 +8,11 @@ jobs:
   process-test-results:
     runs-on: ubuntu-latest
     steps:
+    - name: Install yq
+      run: |
+        sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        sudo chmod +x /usr/local/bin/yq
+
     - name: Display test metadata
       run: |
         echo "🔍 Processing test results from home-ci"
@@ -41,6 +46,64 @@ jobs:
           echo "⚠️  No artifacts found in payload"
         fi
 
+    - name: Process e2e test report
+      if: github.event.client_payload.artifacts
+      run: |
+        echo "📊 Processing e2e test report..."
+
+        # Extract YAML e2e report files
+        echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r '
+          to_entries[] |
+          select(.key | endswith("-e2e-report.yaml")) |
+          "REPORT_FILE=\(.key)\nREPORT_CONTENT=\(.value.content)"
+        ' > report_vars.env
+
+        if [ -f report_vars.env ] && [ -s report_vars.env ]; then
+          source report_vars.env
+
+          # Decode and save e2e report content
+          if [ ! -z "$REPORT_CONTENT" ] && [ "$REPORT_CONTENT" != "null" ]; then
+            echo "$REPORT_CONTENT" | base64 -d > "test-artifacts/$REPORT_FILE"
+            echo "✅ Saved e2e report: test-artifacts/$REPORT_FILE"
+
+            # Parse and display e2e report information
+            echo ""
+            echo "🧪 E2E Test Report Summary:"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            # Extract general info using yq (if available) or basic grep/awk
+            if command -v yq >/dev/null 2>&1; then
+              echo "📍 Test Run Info:"
+              echo "  Start time: $(yq e '.test_run.start_time' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Runner: $(yq e '.test_run.runner' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  OS: $(yq e '.environment.os' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Architecture: $(yq e '.environment.arch' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+
+              echo ""
+              echo "🏁 Test Summary:"
+              echo "  End time: $(yq e '.summary.end_time' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Duration: $(yq e '.summary.duration_seconds' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A') seconds"
+              echo "  Overall status: $(yq e '.summary.overall_status' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Success rate: $(yq e '.summary.success_rate' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Total steps: $(yq e '.summary.total_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Passed steps: $(yq e '.summary.passed_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Failed steps: $(yq e '.summary.failed_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+
+              echo ""
+              echo "📋 Test Steps:"
+              yq e '.steps[] | "  " + .phase + ": " + .status + " (" + .timestamp + ")"' test-artifacts/$REPORT_FILE 2>/dev/null || echo "  Unable to parse steps"
+            else
+              echo "⚠️  yq not available, showing raw summary info"
+              grep -A 10 "summary:" test-artifacts/$REPORT_FILE || echo "  Unable to extract summary"
+            fi
+
+          else
+            echo "⚠️  E2E report content is empty or null"
+          fi
+        else
+          echo "ℹ️  No e2e report files found in artifacts"
+        fi
+
     - name: Decode and save test logs
       if: github.event.client_payload.artifacts
       run: |
@@ -66,35 +129,6 @@ jobs:
             echo "📊 Log file summary:"
             echo "  Size: $(wc -c < test-artifacts/$LOG_FILE) bytes"
             echo "  Lines: $(wc -l < test-artifacts/$LOG_FILE) lines"
-
-            # Show key information from logs
-            echo ""
-            echo "🔍 Test execution highlights:"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
-            # Extract key information
-            if grep -q "Install kind" "test-artifacts/$LOG_FILE"; then
-              echo "  ✅ Kind installation step found"
-            fi
-
-            if grep -q "Create k8s cluster" "test-artifacts/$LOG_FILE"; then
-              echo "  ✅ Kubernetes cluster creation step found"
-            fi
-
-            if grep -q "kubectl get" "test-artifacts/$LOG_FILE"; then
-              echo "  ✅ Kubernetes verification commands found"
-            fi
-
-            # Show any errors
-            if grep -qi "error\|fail" "test-artifacts/$LOG_FILE"; then
-              echo "  ⚠️  Errors or failures detected:"
-              grep -i "error\|fail" "test-artifacts/$LOG_FILE" | head -3 | sed 's/^/     /'
-            fi
-
-            # Show success indicators
-            if grep -q "Ready.*control-plane" "test-artifacts/$LOG_FILE"; then
-              echo "  ✅ Kubernetes control plane ready"
-            fi
 
           else
             echo "⚠️  Log content is empty or null"
