@@ -162,19 +162,40 @@ jobs:
         echo "│ Source: ${{ github.event.client_payload.source }}"
         echo "╰─────────────────────────────────────────╯"
 
+        # Show test steps if available
+        if [ -d test-artifacts ]; then
+          REPORT_FILE=$(find test-artifacts -name "*-e2e-report.yaml" | head -1)
+          if [ -f "$REPORT_FILE" ] && command -v yq >/dev/null 2>&1; then
+            echo ""
+            echo "📋 Test Steps Summary:"
+            yq '.steps[] | "  " + .phase + ": " + .status + " (" + .timestamp + ")"' "$REPORT_FILE" 2>/dev/null | tr -d '"' || echo "  No steps data available"
+          fi
+        fi
+
         # Create summary for GitHub Actions summary
-        cat >> $GITHUB_STEP_SUMMARY << EOF
-        ## $STATUS_EMOJI External Test Results - $STATUS_MSG
+        {
+          echo "## $STATUS_EMOJI External Test Results - $STATUS_MSG"
+          echo ""
+          echo "**Test Details:**"
+          echo "- **Status**: $STATUS_EMOJI $STATUS_MSG"
+          echo "- **Branch**: \`${{ github.event.client_payload.branch }}\`"
+          echo "- **Commit**: \`${{ github.event.client_payload.commit }}\`"
+          echo "- **Source**: ${{ github.event.client_payload.source }}"
+          echo "- **Timestamp**: $(date -d @${{ github.event.client_payload.timestamp }} 2>/dev/null || echo "${{ github.event.client_payload.timestamp }}")"
+          echo ""
+          echo "**Artifact**: ${{ github.event.client_payload.artifact_name }}"
 
-        **Test Details:**
-        - **Status**: $STATUS_EMOJI $STATUS_MSG
-        - **Branch**: \`${{ github.event.client_payload.branch }}\`
-        - **Commit**: \`${{ github.event.client_payload.commit }}\`
-        - **Source**: ${{ github.event.client_payload.source }}
-        - **Timestamp**: $(date -d @${{ github.event.client_payload.timestamp }} 2>/dev/null || echo "${{ github.event.client_payload.timestamp }}")
-
-        **Artifact**: ${{ github.event.client_payload.artifact_name }}
-        EOF
+          # Add test steps to GitHub summary if available
+          if [ -d test-artifacts ]; then
+            REPORT_FILE=$(find test-artifacts -name "*-e2e-report.yaml" | head -1)
+            if [ -f "$REPORT_FILE" ] && command -v yq >/dev/null 2>&1; then
+              echo ""
+              echo "### 📋 Test Steps"
+              echo ""
+              yq '.steps[] | "- **" + .phase + "**: " + .status + " _(" + .timestamp + ")_"' "$REPORT_FILE" 2>/dev/null | tr -d '"' || echo "No steps data available"
+            fi
+          fi
+        } >> $GITHUB_STEP_SUMMARY
 
     - name: Upload artifacts
       if: github.event.client_payload.artifacts
