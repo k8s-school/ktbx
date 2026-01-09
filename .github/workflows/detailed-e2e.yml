@@ -1,7 +1,8 @@
 ---
 name: "Detailed Integration Tests"
 on:
-  workflow_dispatch:
+  repository_dispatch:
+    types: [dispatch-with-artifacts, test-dispatch-with-artifacts]
 jobs:
   build:
     name: Build Step Details
