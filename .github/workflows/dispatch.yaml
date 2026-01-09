@@ -10,8 +10,8 @@ jobs:
     steps:
     - name: Install yq
       run: |
-        sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-        sudo chmod +x /usr/local/bin/yq
+        sudo apt-get update && sudo apt-get install -y python3-pip
+        pip3 install yq
 
     - name: Display test metadata
       run: |
@@ -74,24 +74,24 @@ jobs:
             # Extract general info using yq (if available) or basic grep/awk
             if command -v yq >/dev/null 2>&1; then
               echo "📍 Test Run Info:"
-              echo "  Start time: $(yq e '.test_run.start_time' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Runner: $(yq e '.test_run.runner' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  OS: $(yq e '.environment.os' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Architecture: $(yq e '.environment.arch' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  Start time: $(yq '.test_run.start_time' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Runner: $(yq '.test_run.runner' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  OS: $(yq '.environment.os' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Architecture: $(yq '.environment.arch' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
 
               echo ""
               echo "🏁 Test Summary:"
-              echo "  End time: $(yq e '.summary.end_time' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Duration: $(yq e '.summary.duration_seconds' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A') seconds"
-              echo "  Overall status: $(yq e '.summary.overall_status' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Success rate: $(yq e '.summary.success_rate' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Total steps: $(yq e '.summary.total_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Passed steps: $(yq e '.summary.passed_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
-              echo "  Failed steps: $(yq e '.summary.failed_steps' test-artifacts/$REPORT_FILE 2>/dev/null || echo 'N/A')"
+              echo "  End time: $(yq '.summary.end_time' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Duration: $(yq '.summary.duration_seconds' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A') seconds"
+              echo "  Overall status: $(yq '.summary.overall_status' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Success rate: $(yq '.summary.success_rate' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Total steps: $(yq '.summary.total_steps' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Passed steps: $(yq '.summary.passed_steps' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
+              echo "  Failed steps: $(yq '.summary.failed_steps' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
 
               echo ""
               echo "📋 Test Steps:"
-              yq e '.steps[] | "  " + .phase + ": " + .status + " (" + .timestamp + ")"' test-artifacts/$REPORT_FILE 2>/dev/null || echo "  Unable to parse steps"
+              yq '.steps[] | "  " + .phase + ": " + .status + " (" + .timestamp + ")"' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo "  Unable to parse steps"
             else
               echo "⚠️  yq not available, showing raw summary info"
               grep -A 10 "summary:" test-artifacts/$REPORT_FILE || echo "  Unable to extract summary"
