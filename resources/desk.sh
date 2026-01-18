@@ -36,15 +36,26 @@ MOUNTS="$MOUNTS --volume /tmp:/tmp"
 MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
 
-# Openshift binary is huge and optional, so it is not build inside the image
-oc_bin=$(which oc) || oc_bin=""
-if [ -n "$oc_bin" ]; then
-    MOUNTS="$MOUNTS --volume $oc_bin:/usr/local/bin/oc"
+# Optional binaries that are not built inside the image
+for binary in oc kind cosign trivy docker; do
+    bin_path=$(which $binary) || bin_path=""
+    if [ -n "$bin_path" ]; then
+        MOUNTS="$MOUNTS --volume $bin_path:/usr/local/bin/$binary"
+    fi
+done
+
+# Mount Docker socket for Docker daemon access
+DOCKER_GROUP_ADD=""
+if [ -S "/var/run/docker.sock" ]; then
+    MOUNTS="$MOUNTS --volume /var/run/docker.sock:/var/run/docker.sock"
+    # Get docker group ID and add user to docker group in container
+    docker_gid=$(stat -c '%g' /var/run/docker.sock)
+    DOCKER_GROUP_ADD="--group-add $docker_gid"
 fi
 
 if [ "$SHOWDOCKERCMD" = true ]; then
     echo "docker run -it --net=host \
-$MOUNTS --rm \
+$MOUNTS $DOCKER_GROUP_ADD --rm \
 --user=$(id -u):$(id -g $USER) \
 -w $HOME -- \
 \"$IMAGE\""
@@ -54,7 +65,7 @@ else
     echo "   Welcome in k8s toolbox desk"
     echo "oOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoOoO"
     docker run -it --net=host \
-        $MOUNTS --rm \
+        $MOUNTS $DOCKER_GROUP_ADD --rm \
         --user=$(id -u):$(id -g $USER) \
         -w $HOME -- \
         "$IMAGE" $CMD

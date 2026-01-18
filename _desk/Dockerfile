@@ -12,7 +12,7 @@ RUN apt-get -y update && \
     apt-get -y clean
 
 RUN apt-get -y update && \
-    apt-get -y install curl bash-completion git gnupg jq \
+    apt-get -y install auditd curl bash-completion git gnupg jq \
     kubectx lsb-release locales make \
     nano openssh-client parallel \
     unzip vim wget zsh \
