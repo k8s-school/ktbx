@@ -17,6 +17,7 @@ import (
 )
 
 var install []string
+var count int
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
@@ -29,7 +30,7 @@ var createCmd = &cobra.Command{
 		fmt.Println("Create k8s cluster")
 
 		internal.LogConfiguration()
-		createCluster(clusterName)
+		createClusters(clusterName, count)
 		// Write golang code to create a file inside a docker container using the ContainerExec operation of the docker API
 	},
 }
@@ -46,9 +47,28 @@ func init() {
 	viper.BindPFlag("kind."+cni, createCmd.PersistentFlags().Lookup(cni))
 
 	createCmd.PersistentFlags().StringSliceVarP(&install, "install", "i", []string{}, "install additional components (olm, argocd, argo-workflow)")
+
+	createCmd.PersistentFlags().IntVar(&count, "count", 1, "number of clusters to create with numbered suffix (e.g., name-0, name-1, ...)")
 }
 
-func createCluster(clusterName string) {
+func createClusters(baseName string, count int) {
+	if count <= 1 {
+		// Single cluster
+		createSingleCluster(baseName)
+	} else {
+		// Multiple clusters with numbered suffix
+		if baseName == "" {
+			baseName = "kind"
+		}
+		for i := 0; i < count; i++ {
+			clusterName := fmt.Sprintf("%s-%d", baseName, i)
+			slog.Info("Creating cluster", "name", clusterName, "index", i+1, "total", count)
+			createSingleCluster(clusterName)
+		}
+	}
+}
+
+func createSingleCluster(clusterName string) {
 	_, err := exec.LookPath(internal.Kind)
 	if err != nil {
 		slog.Error("binary not found in PATH", "binary", internal.Kind)
