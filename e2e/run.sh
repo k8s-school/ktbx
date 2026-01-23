@@ -4,13 +4,17 @@ set -euxo pipefail
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-# Test report file (YAML format for better GHA integration)
-# home-ci will set HOME_CI_LOG_DIR and HOME_CI_WORKSPACE_ID
-LOG_DIR="${HOME_CI_LOG_DIR:-$(mktemp -d --suffix -ktbx)}"
-WORKSPACE_ID="${HOME_CI_WORKSPACE_ID:-$(date +%Y%m%d-%H%M%S)}"
-REPO_NAME="${HOME_CI_REPO_NAME:-ktbx}"
-TEST_REPORT="$LOG_DIR/$REPO_NAME/$WORKSPACE_ID-e2e-report.yaml"
+
 START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Test report file (YAML format for better GHA integration)
+# Check that HOME_CI_RESULT_FILE is set
+if [ -z "$HOME_CI_RESULT_FILE" ]; then
+    TEST_REPORT="$DIR/../e2e-report.yaml"
+    echo "WARNING: HOME_CI_RESULT_FILE is not set, using temporary file $TEST_REPORT"
+else
+    TEST_REPORT="$HOME_CI_RESULT_FILE"
+fi
 
 # Create log directory if it doesn't exist
 mkdir -p "$(dirname "$TEST_REPORT")"
