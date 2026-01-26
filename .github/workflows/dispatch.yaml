@@ -15,46 +15,46 @@ jobs:
 
     - name: Display test metadata
       run: |
-        echo "🔍 Processing test results from home-ci"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "📍 Branch: ${{ github.event.client_payload.branch }}"
-        echo "📍 Commit: ${{ github.event.client_payload.commit }}"
-        echo "📍 Success: ${{ github.event.client_payload.success }}"
-        echo "📍 Source: ${{ github.event.client_payload.source }}"
-        echo "📍 Timestamp: ${{ github.event.client_payload.timestamp }}"
-        echo "📍 Artifact: ${{ github.event.client_payload.artifact_name }}"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        printf '%s\n' "🔍 Processing test results from home-ci"
+        printf '%s\n' "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        printf '%s\n' "📍 Branch: ${{ github.event.client_payload.branch }}"
+        printf '%s\n' "📍 Commit: ${{ github.event.client_payload.commit }}"
+        printf '%s\n' "📍 Success: ${{ github.event.client_payload.success }}"
+        printf '%s\n' "📍 Source: ${{ github.event.client_payload.source }}"
+        printf '%s\n' "📍 Timestamp: ${{ github.event.client_payload.timestamp }}"
+        printf '%s\n' "📍 Artifact: ${{ github.event.client_payload.artifact_name }}"
+        printf '%s\n' "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     - name: Process test logs
       run: |
-        echo "📋 Processing test execution logs..."
+        printf '%s\n' "📋 Processing test execution logs..."
 
         # Check if artifacts exist and process them
         if [ "${{ toJson(github.event.client_payload.artifacts) }}" != "null" ]; then
-          echo "✅ Test artifacts found"
+          printf '%s\n' "✅ Test artifacts found"
 
           # Create artifacts directory
           mkdir -p test-artifacts
 
           # List available artifacts
-          echo "📦 Available artifacts:"
+          printf '%s\n' "📦 Available artifacts:"
           echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'keys[]' | while read artifact; do
             echo "  - $artifact"
           done
 
         else
-          echo "⚠️  No artifacts found in payload"
+          printf '%s\n' "⚠️  No artifacts found in payload"
         fi
 
     - name: Process e2e test report
       if: github.event.client_payload.artifacts
       run: |
-        echo "📊 Processing e2e test report..."
+        printf '%s\n' "📊 Processing e2e test report..."
 
         # Extract YAML e2e report files
         echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r '
           to_entries[] |
-          select(.key | endswith("-e2e-report.yaml")) |
+          select(.key | endswith("e2e-report.yaml")) |
           "REPORT_FILE=\(.key)\nREPORT_CONTENT=\(.value.content)"
         ' > report_vars.env
 
@@ -64,23 +64,23 @@ jobs:
           # Decode and save e2e report content
           if [ ! -z "$REPORT_CONTENT" ] && [ "$REPORT_CONTENT" != "null" ]; then
             echo "$REPORT_CONTENT" | base64 -d > "test-artifacts/$REPORT_FILE"
-            echo "✅ Saved e2e report: test-artifacts/$REPORT_FILE"
+            printf '%s\n' "✅ Saved e2e report: test-artifacts/$REPORT_FILE"
 
             # Parse and display e2e report information
             echo ""
-            echo "🧪 E2E Test Report Summary:"
-            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            printf '%s\n' "🧪 E2E Test Report Summary:"
+            printf '%s\n' "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
             # Extract general info using yq (if available) or basic grep/awk
             if command -v yq >/dev/null 2>&1; then
-              echo "📍 Test Run Info:"
+              printf '%s\n' "📍 Test Run Info:"
               echo "  Start time: $(yq '.test_run.start_time' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
               echo "  Runner: $(yq '.test_run.runner' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
               echo "  OS: $(yq '.environment.os' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
               echo "  Architecture: $(yq '.environment.arch' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
 
               echo ""
-              echo "🏁 Test Summary:"
+              printf '%s\n' "🏁 Test Summary:"
               echo "  End time: $(yq '.summary.end_time' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
               echo "  Duration: $(yq '.summary.duration_seconds' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A') seconds"
               echo "  Overall status: $(yq '.summary.overall_status' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
@@ -90,24 +90,24 @@ jobs:
               echo "  Failed steps: $(yq '.summary.failed_steps' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo 'N/A')"
 
               echo ""
-              echo "📋 Test Steps:"
+              printf '%s\n' "📋 Test Steps:"
               yq '.steps[] | "  " + .phase + ": " + .status + " (" + .timestamp + ")"' test-artifacts/$REPORT_FILE 2>/dev/null | tr -d '"' || echo "  Unable to parse steps"
             else
-              echo "⚠️  yq not available, showing raw summary info"
+              printf '%s\n' "⚠️  yq not available, showing raw summary info"
               grep -A 10 "summary:" test-artifacts/$REPORT_FILE || echo "  Unable to extract summary"
             fi
 
           else
-            echo "⚠️  E2E report content is empty or null"
+            printf '%s\n' "⚠️  E2E report content is empty or null"
           fi
         else
-          echo "ℹ️  No e2e report files found in artifacts"
+          printf '%s\n' "ℹ️  No e2e report files found in artifacts"
         fi
 
     - name: Decode and save test logs
       if: github.event.client_payload.artifacts
       run: |
-        echo "💾 Extracting test logs..."
+        echo "Extracting test logs..."
 
         # Extract log files (find files with .log extension in artifacts)
         echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r '
@@ -122,24 +122,24 @@ jobs:
           # Decode and save log content
           if [ ! -z "$LOG_CONTENT" ] && [ "$LOG_CONTENT" != "null" ]; then
             echo "$LOG_CONTENT" | base64 -d > "test-artifacts/$LOG_FILE"
-            echo "✅ Saved log file: test-artifacts/$LOG_FILE"
+            echo "Saved log file: test-artifacts/$LOG_FILE"
 
             # Show log summary
             echo ""
-            echo "📊 Log file summary:"
+            echo "Log file summary:"
             echo "  Size: $(wc -c < test-artifacts/$LOG_FILE) bytes"
             echo "  Lines: $(wc -l < test-artifacts/$LOG_FILE) lines"
 
           else
-            echo "⚠️  Log content is empty or null"
+            echo "Log content is empty or null"
           fi
         else
-          echo "ℹ️  No log files found in artifacts"
+          echo "No log files found in artifacts"
         fi
 
     - name: Create test result summary
       run: |
-        echo "📈 Creating test result summary..."
+        echo "Creating test result summary..."
 
         # Determine status emoji and message
         if [ "${{ github.event.client_payload.success }}" == "true" ]; then
@@ -164,7 +164,7 @@ jobs:
 
         # Show test steps if available
         if [ -d test-artifacts ]; then
-          REPORT_FILE=$(find test-artifacts -name "*-e2e-report.yaml" | head -1)
+          REPORT_FILE=$(find test-artifacts -name "e2e-report.yaml" | head -1)
           if [ -f "$REPORT_FILE" ] && command -v yq >/dev/null 2>&1; then
             echo ""
             echo "📋 Test Steps Summary:"
@@ -187,7 +187,7 @@ jobs:
 
           # Add test steps to GitHub summary if available
           if [ -d test-artifacts ]; then
-            REPORT_FILE=$(find test-artifacts -name "*-e2e-report.yaml" | head -1)
+            REPORT_FILE=$(find test-artifacts -name "e2e-report.yaml" | head -1)
             if [ -f "$REPORT_FILE" ] && command -v yq >/dev/null 2>&1; then
               echo ""
               echo "### 📋 Test Steps"
