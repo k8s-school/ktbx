@@ -9,6 +9,7 @@ START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Test report file (YAML format for better GHA integration)
 # Check that HOME_CI_RESULT_FILE is set
+HOME_CI_RESULT_FILE="${HOME_CI_RESULT_FILE:-}"
 if [ -z "$HOME_CI_RESULT_FILE" ]; then
     TEST_REPORT="$DIR/../e2e-report.yaml"
     echo "WARNING: HOME_CI_RESULT_FILE is not set, using temporary file $TEST_REPORT"
@@ -59,7 +60,7 @@ echo "=========================="
 
 # Phase 1: Build ktbx
 echo "Phase 1: Building ktbx..."
-if go install .; then
+if go install $DIR/..; then
     log_step "build" "passed" "ktbx binary installed successfully"
     echo "✅ ktbx build successful"
 else
