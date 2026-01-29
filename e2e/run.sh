@@ -20,20 +20,21 @@ fi
 mkdir -p "$(dirname "$TEST_REPORT")"
 
 # Function to log test step (store in variable for later)
-STEPS=""
 log_step() {
     local phase="$1"
     local status="$2"
     local message="$3"
     local timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
-    STEPS+="  - phase: $phase
+    step="  - phase: $phase
     status: $status
     message: \"$message\"
     timestamp: $timestamp
 "
-
     echo "[$timestamp] $phase: $status - $message"
+    cat >> "$TEST_REPORT" <<EOF
+$step
+EOF
 }
 
 # Initialize YAML report
@@ -120,7 +121,6 @@ TOTAL_DURATION=$(( $(date -d "$END_TIME" +%s) - $(date -d "$START_TIME" +%s) ))
 
 # Append all steps to the YAML file
 cat >> "$TEST_REPORT" <<EOF
-$STEPS
 summary:
   end_time: $END_TIME
   duration_seconds: $TOTAL_DURATION
