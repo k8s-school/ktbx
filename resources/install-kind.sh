@@ -15,6 +15,17 @@ KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
 KIND_BIN="$KTBX_INSTALL_DIR/kind"
 KIND_VERSION="{{ .KindVersion }}"
 
+if [ -w "$KTBX_INSTALL_DIR" ]; then
+    SUDO_CMD=""
+else
+    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+      SUDO_CMD="sudo"
+    else
+      echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is unavailable or restricted."
+      exit 1
+    fi
+fi
+
 # If kind exists, compare current version to desired one
 if [ -e $KIND_BIN ]; then
   current_version="v$(kind version -q)"
@@ -34,7 +45,7 @@ else
 
   tmp_dir=$(mktemp -d --suffix "-ktbx-kind")
   curl -Lo "$tmp_dir/kind" https://github.com/kubernetes-sigs/kind/releases/download/"$KIND_VERSION"/kind-$OS-$ARCH
-  sudo install -m 555 "$tmp_dir/kind" "$KIND_BIN"
+  $SUDO_CMD install -m 555 "$tmp_dir/kind" "$KIND_BIN"
   rm -r "$tmp_dir"
 fi
 

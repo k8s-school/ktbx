@@ -11,6 +11,17 @@ KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
 
 NS="argo"
 
+if [ -w "$KTBX_INSTALL_DIR" ]; then
+    SUDO_CMD=""
+else
+    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+      SUDO_CMD="sudo"
+    else
+      echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is unavailable or restricted."
+      exit 1
+    fi
+fi
+
 echo "Create namespace $NS"
 kubectl create namespace "$NS" --dry-run=client -o yaml | kubectl apply -f -
 
@@ -35,7 +46,7 @@ else
     echo "Install Argo-workflow CLI $ARGO_WORKFLOWS_VERSION"
     curl -sSL -o "$tmp_dir"/argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/argo-linux-amd64.gz
     gunzip "$tmp_dir"/argo-linux-amd64.gz
-    sudo install -m 555 "$tmp_dir"/argo-linux-amd64 "$argo_bin"
+    $SUDO_CMD install -m 555 "$tmp_dir"/argo-linux-amd64 "$argo_bin"
 fi
 
 

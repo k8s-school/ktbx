@@ -21,6 +21,17 @@ argocd_bin="$KTBX_INSTALL_DIR/argocd"
 timeout=240
 timeout_sec="${timeout}s"
 
+if [ -w "$KTBX_INSTALL_DIR" ]; then
+    SUDO_CMD=""
+else
+    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+      SUDO_CMD="sudo"
+    else
+      echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is unavailable or restricted."
+      exit 1
+    fi
+fi
+
 wait_for_exist() {
   xtrace=$(set +o|grep xtrace); set +x
   local ns=${1?namespace is required}; shift
@@ -113,7 +124,7 @@ if  [[ $current_version =~ "$argocd_version" ]]; then
   echo "WARN: argocd $argocd_version is already installed"
 else
   curl -sSL -o "$tmp_dir"/argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/$argocd_version/argocd-linux-amd64
-  sudo install -m 555 "$tmp_dir"/argocd-linux-amd64 "$argocd_bin"
+  $SUDO_CMD install -m 555 "$tmp_dir"/argocd-linux-amd64 "$argocd_bin"
 fi
 
 
