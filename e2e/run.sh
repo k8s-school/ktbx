@@ -81,6 +81,15 @@ else
     exit 1
 fi
 
+if ktbx install kubectl; then
+    log_step "kubectl_install" "passed" "Kubectl installed successfully"
+    echo "✅ Kubectl installation successful"
+else
+    log_step "kubectl_install" "failed" "Failed to install Kubectl"
+    echo "❌ Kubectl installation failed"
+    exit 1
+fi
+
 # Phase 3: Create cluster
 echo "Phase 3: Creating Kind cluster..."
 if ktbx create --single -n ktbx; then
