@@ -7,6 +7,7 @@
 set -euxo pipefail
 
 ARGO_OPERATOR_VERSION="v0.11.0"
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
 
 # Get lates release version with below command:
 # argocd_version=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -15,7 +16,7 @@ GITHUB_URL="https://raw.githubusercontent.com/argoproj-labs/argocd-operator/$ARG
 
 OPERATOR_NAMESPACE="operators"
 
-argocd_bin="/usr/local/bin/argocd"
+argocd_bin="$KTBX_INSTALL_DIR/argocd"
 
 timeout=240
 timeout_sec="${timeout}s"

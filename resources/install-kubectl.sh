@@ -7,8 +7,10 @@ set -euxo pipefail
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
+
 KUBECTL_VERSION="v1.30.0"
-KUBECTL_BIN="/usr/local/bin/kubectl"
+KUBECTL_BIN="$KTBX_INSTALL_DIR/kubectl"
 
 OS="$(uname -s)"
 test "$OS" = "Linux" && OS="linux"

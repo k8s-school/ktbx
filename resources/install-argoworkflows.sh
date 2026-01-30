@@ -7,6 +7,7 @@
 set -euxo pipefail
 
 ARGO_WORKFLOWS_VERSION="v3.5.2"
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
 
 NS="argo"
 
@@ -16,7 +17,7 @@ kubectl create namespace "$NS" --dry-run=client -o yaml | kubectl apply -f -
 echo "Install Argo Workflows $ARGO_WORKFLOWS_VERSION"
 kubectl apply -n "$NS" -f "https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/install.yaml"
 
-readonly argo_bin="/usr/local/bin/argo"
+readonly argo_bin="$KTBX_INSTALL_DIR/argo"
 
 echo "Install Argo client $ARGO_WORKFLOWS_VERSION"
 
@@ -34,7 +35,7 @@ else
     echo "Install Argo-workflow CLI $ARGO_WORKFLOWS_VERSION"
     curl -sSL -o "$tmp_dir"/argo-linux-amd64.gz https://github.com/argoproj/argo-workflows/releases/download/$ARGO_WORKFLOWS_VERSION/argo-linux-amd64.gz
     gunzip "$tmp_dir"/argo-linux-amd64.gz
-    sudo install -m 555 "$tmp_dir"/argo-linux-amd64 /usr/local/bin/argo
+    sudo install -m 555 "$tmp_dir"/argo-linux-amd64 "$argo_bin"
 fi
 
 

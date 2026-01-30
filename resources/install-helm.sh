@@ -7,7 +7,9 @@
 
 set -euxo pipefail
 
-helm_bin="/usr/local/bin/helm"
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
+
+helm_bin="$KTBX_INSTALL_DIR/helm"
 helm_version="3.16.2"
 
 # If helm exists, compare current version to desired one

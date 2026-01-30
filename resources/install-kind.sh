@@ -10,7 +10,9 @@ set -euxo pipefail
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-KIND_BIN="/usr/local/bin/kind"
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
+
+KIND_BIN="$KTBX_INSTALL_DIR/kind"
 KIND_VERSION="{{ .KindVersion }}"
 
 # If kind exists, compare current version to desired one
