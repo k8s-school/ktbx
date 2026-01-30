@@ -5,13 +5,13 @@ go 1.23.0
 toolchain go1.23.4
 
 require (
-	github.com/k8s-school/ciux v0.0.7-rc1
+	github.com/k8s-school/ciux v0.0.7-rc2
 	github.com/mcuadros/go-defaults v1.2.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	gopkg.in/yaml.v2 v2.4.0
 )
 
