@@ -1,2 +1,0 @@
-Acces falco UI
-kubectl port-forward -n falco $(kubectl get  pods --selector=app.kubernetes.io/component=ui -n falco --output=jsonpath="{.items[0].metadata.name}") 2802
