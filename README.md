@@ -11,7 +11,7 @@ Can be used for runners launched by a  CI/CD platform, including [Github Action]
 
 [![CI Status](https://github.com/k8s-school/ktbx/actions/workflows/e2e.yml/badge.svg?branch=main)](https://github.com/k8s-school/ktbx/actions/workflows/e2e.yml)
 
-Support `kind-v0.20.0` and `k8s-v1.25+`
+Support `kind-v0.31.0` and `k8s-v1.25+`
 
 ## Pre-requisites
 
@@ -22,7 +22,7 @@ Support `kind-v0.20.0` and `k8s-v1.25+`
 ## Run kind on a workstation, in two lines of code
 
 ```shell
-go install github.com/k8s-school/ktbx@v1.1.1-rc17
+go install github.com/k8s-school/ktbx@v1.1.6-rc3
 
 # Install kind
 ktbx install kind
