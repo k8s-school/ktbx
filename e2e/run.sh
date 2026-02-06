@@ -7,6 +7,8 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+CIUX_VERSION="v0.0.7-rc2"
+
 # Test report file (YAML format for better GHA integration)
 # Check that HOME_CI_RESULT_FILE is set
 HOME_CI_RESULT_FILE="${HOME_CI_RESULT_FILE:-}"
@@ -91,9 +93,10 @@ else
 fi
 
 # Phase 3: Create cluster
+CLUSTER_NAME=$(ciux get clustername "$DIR/..")
 echo "Phase 3: Creating Kind cluster..."
-if ktbx create --single -n ktbx; then
-    log_step "cluster_create" "passed" "Kind cluster 'ktbx' created successfully"
+if ktbx create --single -n "$CLUSTER_NAME"; then
+    log_step "cluster_create" "passed" "Kind cluster '$CLUSTER_NAME' created successfully"
     echo "✅ Cluster creation successful"
 else
     log_step "cluster_create" "failed" "Failed to create Kind cluster"

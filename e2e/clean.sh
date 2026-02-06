@@ -4,4 +4,5 @@ set -euxo pipefail
 
 DIR=$(cd "$(dirname "$0")"; pwd -P)
 
-ktbx delete -n home-ci
+CLUSTER_NAME=$(ciux get clustername "$DIR/..")
+ktbx delete -n "$CLUSTER_NAME"
