@@ -8,6 +8,7 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 CIUX_VERSION="v0.0.7-rc2"
+go install github.com/k8s-school/ciux@"$CIUX_VERSION"
 
 # Test report file (YAML format for better GHA integration)
 # Check that HOME_CI_RESULT_FILE is set
