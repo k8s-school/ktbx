@@ -59,10 +59,6 @@ environment:
 steps:
 EOF
 
-
-FAILAGAIN
-
-
 echo "=== KTBX E2E Test Suite ==="
 echo "Start time: $START_TIME"
 echo "Test report: $TEST_REPORT"
