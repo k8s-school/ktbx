@@ -7,7 +7,8 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-ERROR!!:
+# FIXME: This fails home-ci dispatch
+# ERROR!!:
 
 CIUX_VERSION="v0.0.7-rc2"
 go install github.com/k8s-school/ciux@"$CIUX_VERSION"
@@ -57,6 +58,10 @@ environment:
 
 steps:
 EOF
+
+
+FAIL
+
 
 echo "=== KTBX E2E Test Suite ==="
 echo "Start time: $START_TIME"
