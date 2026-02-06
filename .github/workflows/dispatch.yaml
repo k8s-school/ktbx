@@ -131,11 +131,21 @@ jobs:
             echo "  Lines: $(wc -l < test-artifacts/$LOG_FILE) lines"
 
           else
-            echo "Log content is empty or null"
+            echo "ERROR: Log content is empty or null"
+            exit 1
           fi
         else
-          echo "No log files found in artifacts"
+          echo "ERROR:No log files found in artifacts"
+          exit 1
         fi
+
+    - name: Upload artifacts
+      if: github.event.client_payload.artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: external-test-results-${{ github.event.client_payload.artifact_name }}
+        path: test-artifacts/
+        retention-days: 30
 
     - name: Create test result summary
       run: |
@@ -146,10 +156,12 @@ jobs:
           STATUS_EMOJI="✅"
           STATUS_MSG="SUCCESS"
           STATUS_COLOR="🟢"
+          EXIT_CODE=0
         else
           STATUS_EMOJI="❌"
           STATUS_MSG="FAILURE"
           STATUS_COLOR="🔴"
+          EXIT_CODE=1
         fi
 
         echo ""
@@ -197,10 +209,6 @@ jobs:
           fi
         } >> $GITHUB_STEP_SUMMARY
 
-    - name: Upload artifacts
-      if: github.event.client_payload.artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: external-test-results-${{ github.event.client_payload.artifact_name }}
-        path: test-artifacts/
-        retention-days: 30
+        exit $EXIT_CODE
+
+
