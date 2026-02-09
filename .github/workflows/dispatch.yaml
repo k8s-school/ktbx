@@ -42,29 +42,32 @@ jobs:
 
       - name: Parse E2E Report
         if: always()
+        shell: python
         run: |
-          REPORT="test-artifacts/e2e-report.yaml"
-          if [ -f "$REPORT" ]; then
-            echo "### 📊 Test Metrics" >> $GITHUB_STEP_SUMMARY
-            # Running python directly with a flat string to avoid YAML indentation errors
-            python3 -c "
-import yaml
-try:
-    with open('$REPORT', 'r') as f:
-        data = yaml.safe_load(f)
-        s = data.get('summary', {})
-        print(f'- **Overall Status**: {s.get(\"overall_status\", \"N/A\")}')
-        print(f'- **Success Rate**: {s.get(\"success_rate\", \"N/A\")}')
-        print(f'- **Duration**: {s.get(\"duration_seconds\", 0)}s')
-        print(\"\n#### 📋 Detailed Steps\")
-        for step in data.get('steps', []):
-            print(f'- **{step[\"phase\"]}**: {step[\"status\"]} _({step[\"timestamp\"]})_')
-except Exception as e:
-    print(f'⚠️ Error: {e}')
-" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ No \`e2e-report.yaml\` found." >> $GITHUB_STEP_SUMMARY
-          fi
+          import yaml
+          import os
+
+          report_path = "test-artifacts/e2e-report.yaml"
+          summary_path = os.environ['GITHUB_STEP_SUMMARY']
+
+          if os.path.exists(report_path):
+              with open(summary_path, "a") as summary:
+                  summary.write("### 📊 Test Metrics\n")
+                  try:
+                      with open(report_path, "r") as f:
+                          data = yaml.safe_load(f)
+                          s = data.get("summary", {})
+                          summary.write(f"- **Overall Status**: {s.get('overall_status', 'N/A')}\n")
+                          summary.write(f"- **Success Rate**: {s.get('success_rate', 'N/A')}\n")
+                          summary.write(f"- **Duration**: {s.get('duration_seconds', 0)}s\n")
+                          summary.write("\n#### 📋 Detailed Steps\n")
+                          for step in data.get("steps", []):
+                              summary.write(f"- **{step['phase']}**: {step['status']} _({step['timestamp']})_\n")
+                  except Exception as e:
+                      summary.write(f"⚠️ Error parsing report: {e}\n")
+          else:
+              with open(summary_path, "a") as summary:
+                  summary.write("⚠️ No `e2e-report.yaml` found.\n")
 
       - name: Upload Artifacts
         if: always()
