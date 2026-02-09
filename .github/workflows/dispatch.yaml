@@ -1,71 +1,10 @@
-name: "Home-CI External Test Results Processing"
-
-on:
-  repository_dispatch:
-    types: [dispatch-with-artifacts, test-dispatch-with-artifacts]
-
-jobs:
-  process-test-results:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Display Test Metadata
+- name: Display Test Metadata
         run: |
           echo "### 🔍 External Test Metadata" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|---:|:---|" >> $GITHUB_STEP_SUMMARY
-          echo "| **Branch** | \`${{ github.event.client_payload.branch }}\` |" >> $GITHUB_SET_SUMMARY
+          # Fixed the 'SET' to 'STEP' below
+          echo "| **Branch** | \`${{ github.event.client_payload.branch }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Commit** | \`${{ github.event.client_payload.commit }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| **Source** | ${{ github.event.client_payload.source }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Status** | ${{ github.event.client_payload.success == 'true' && '✅ Success' || '❌ Failure' }} |" >> $GITHUB_STEP_SUMMARY
-
-      - name: Extract and Decode Artifacts
-        id: artifacts
-        run: |
-          mkdir -p test-artifacts
-          echo "📦 Extracting artifacts..."
-          
-          # Using jq to iterate over the payload and decode base64 content in one pass
-          echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'to_entries[] | "\(.key) \(.value.content)"' | while read -r filename content; do
-            if [ "$content" != "null" ]; then
-              echo "$content" | base64 -d > "test-artifacts/$filename"
-              echo "Successfully decoded: $filename"
-            fi
-          done
-
-      - name: Generate E2E Summary
-        if: success()
-        run: |
-          REPORT="test-artifacts/e2e-report.yaml"
-          if [ -f "$REPORT" ]; then
-            echo "### 🧪 E2E Execution Summary" >> $GITHUB_STEP_SUMMARY
-            # Using python3 (pre-installed) to parse YAML safely without extra installs
-            python3 -c "
-            import yaml, sys
-            with open('$REPORT', 'r') as f:
-                data = yaml.safe_load(f)
-                summary = data.get('summary', {})
-                print(f\"- **Overall Status**: {summary.get('overall_status', 'N/A')}\")
-                print(f\"- **Success Rate**: {summary.get('success_rate', 'N/A')}\")
-                print(f\"- **Duration**: {summary.get('duration_seconds', 0)}s\")
-                print('\n#### Test Steps')
-                for step in data.get('steps', []):
-                    print(f\"- **{step['phase']}**: {step['status']} ({step['timestamp']})\")
-            " >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ No e2e-report.yaml found to parse." >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Upload Test Artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: external-test-results-${{ github.event.client_payload.artifact_name }}
-          path: test-artifacts/
-          retention-days: 30
-
-      - name: Final Result Logic
-        run: |
-          if [ "${{ github.event.client_payload.success }}" != "true" ]; then
-            echo "::error::External tests failed!"
-            exit 1
-          fi
