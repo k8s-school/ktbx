@@ -13,7 +13,7 @@ jobs:
 
       - name: Extract and Decode Artifacts
         run: |
-          echo "📦 Extracting artifacts from payload..."
+          echo "📦 Extracting artifacts..."
           echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'to_entries[] | "\(.key) \(.value.content)"' | while read -r filename content; do
             if [ "$content" != "null" ]; then
               echo "$content" | base64 -d > "test-artifacts/$filename"
@@ -21,18 +21,12 @@ jobs:
             fi
           done
 
-      - name: Generate Summary Report
+      - name: Generate Summary Metadata
         if: always()
         run: |
-          # Status variables
           SUCCESS="${{ github.event.client_payload.success }}"
-          if [ "$SUCCESS" == "true" ]; then
-            EMOJI="✅"
-            STATUS="SUCCESS"
-          else
-            EMOJI="❌"
-            STATUS="FAILURE"
-          fi
+          [ "$SUCCESS" == "true" ] && EMOJI="✅" || EMOJI="❌"
+          [ "$SUCCESS" == "true" ] && STATUS="SUCCESS" || STATUS="FAILURE"
 
           {
             echo "## $EMOJI External Test Results: $STATUS"
@@ -44,32 +38,33 @@ jobs:
             echo "| **Branch** | \`${{ github.event.client_payload.branch }}\` |"
             echo "| **Commit** | \`${{ github.event.client_payload.commit }}\` |"
             echo "| **Artifact Name** | ${{ github.event.client_payload.artifact_name }} |"
-            echo "| **Timestamp** | ${{ github.event.client_payload.timestamp }} |"
-            echo ""
+          } >> $GITHUB_STEP_SUMMARY
 
-            REPORT="test-artifacts/e2e-report.yaml"
-            if [ -f "$REPORT" ]; then
-              echo "### 📊 Test Metrics"
-              # Heredoc avoids the IndentationError caused by YAML/Shell spacing
-              python3 << 'EOF'
+      - name: Parse E2E Report
+        if: always()
+        run: |
+          REPORT="test-artifacts/e2e-report.yaml"
+          if [ -f "$REPORT" ]; then
+            echo "### 📊 Test Metrics" >> $GITHUB_STEP_SUMMARY
+            # Running python directly with a flat string to avoid YAML indentation errors
+            python3 -c "
 import yaml
 try:
-    with open('test-artifacts/e2e-report.yaml', 'r') as f:
+    with open('$REPORT', 'r') as f:
         data = yaml.safe_load(f)
         s = data.get('summary', {})
-        print(f'- **Overall Status**: {s.get("overall_status", "N/A")}')
-        print(f'- **Success Rate**: {s.get("success_rate", "N/A")}')
-        print(f'- **Duration**: {s.get("duration_seconds", 0)}s')
-        print('\n#### 📋 Detailed Steps')
+        print(f'- **Overall Status**: {s.get(\"overall_status\", \"N/A\")}')
+        print(f'- **Success Rate**: {s.get(\"success_rate\", \"N/A\")}')
+        print(f'- **Duration**: {s.get(\"duration_seconds\", 0)}s')
+        print(\"\n#### 📋 Detailed Steps\")
         for step in data.get('steps', []):
-            print(f'- **{step["phase"]}**: {step["status"]} _({step["timestamp"]})_')
+            print(f'- **{step[\"phase\"]}**: {step[\"status\"]} _({step[\"timestamp\"]})_')
 except Exception as e:
-    print(f'⚠️ Could not parse report details: {e}')
-EOF
-            else
-              echo "⚠️ No \`e2e-report.yaml\` found in artifacts."
-            fi
-          } >> $GITHUB_STEP_SUMMARY
+    print(f'⚠️ Error: {e}')
+" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No \`e2e-report.yaml\` found." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload Artifacts
         if: always()
@@ -82,6 +77,5 @@ EOF
       - name: Final Result Logic
         run: |
           if [ "${{ github.event.client_payload.success }}" != "true" ]; then
-            echo "::error title=External Test Failure::The external test suite reported a failure status."
             exit 1
           fi
