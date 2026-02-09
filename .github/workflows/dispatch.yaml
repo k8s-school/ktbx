@@ -1,10 +1,83 @@
-- name: Display Test Metadata
+name: "Home-CI External Test Results Processing"
+
+on:
+  repository_dispatch:
+    types: [dispatch-with-artifacts, test-dispatch-with-artifacts]
+
+jobs:
+  process-test-results:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Initialize
+        run: mkdir -p test-artifacts
+
+      - name: Extract and Decode Artifacts
         run: |
-          echo "### 🔍 External Test Metadata" >> $GITHUB_STEP_SUMMARY
-          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-          echo "|---:|:---|" >> $GITHUB_STEP_SUMMARY
-          # Fixed the 'SET' to 'STEP' below
-          echo "| **Branch** | \`${{ github.event.client_payload.branch }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Commit** | \`${{ github.event.client_payload.commit }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Source** | ${{ github.event.client_payload.source }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| **Status** | ${{ github.event.client_payload.success == 'true' && '✅ Success' || '❌ Failure' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Extracting artifacts from payload..."
+          # Decodes all files provided in the artifacts payload in one pass
+          echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'to_entries[] | "\(.key) \(.value.content)"' | while read -r filename content; do
+            if [ "$content" != "null" ]; then
+              echo "$content" | base64 -d > "test-artifacts/$filename"
+              echo "✅ Decoded: $filename"
+            fi
+          done
+
+      - name: Generate Summary Report
+        if: always()
+        run: |
+          # Define status variables
+          SUCCESS="${{ github.event.client_payload.success }}"
+          [ "$SUCCESS" == "true" ] && EMOJI="✅" || EMOJI="❌"
+          [ "$SUCCESS" == "true" ] && STATUS="SUCCESS" || STATUS="FAILURE"
+
+          {
+            echo "## $EMOJI External Test Results: $STATUS"
+            echo ""
+            echo "### 📍 Execution Details"
+            echo "| Property | Value |"
+            echo "| :--- | :--- |"
+            echo "| **Source** | ${{ github.event.client_payload.source }} |"
+            echo "| **Branch** | \`${{ github.event.client_payload.branch }}\` |"
+            echo "| **Commit** | \`${{ github.event.client_payload.commit }}\` |"
+            echo "| **Artifact Name** | ${{ github.event.client_payload.artifact_name }} |"
+            echo "| **Timestamp** | ${{ github.event.client_payload.timestamp }} |"
+            echo ""
+
+            REPORT="test-artifacts/e2e-report.yaml"
+            if [ -f "$REPORT" ]; then
+              echo "### 📊 Test Metrics"
+              # Using built-in Python for robust parsing
+              python3 -c "
+              import yaml
+              try:
+                  with open('$REPORT', 'r') as f:
+                      data = yaml.safe_load(f)
+                      s = data.get('summary', {})
+                      print(f'- **Overall Status**: {s.get(\"overall_status\", \"N/A\")}')
+                      print(f'- **Success Rate**: {s.get(\"success_rate\", \"N/A\")}')
+                      print(f'- **Duration**: {s.get(\"duration_seconds\", 0)}s')
+                      print('\n#### 📋 Detailed Steps')
+                      for step in data.get('steps', []):
+                          print(f'- **{step[\"phase\"]}**: {step[\"status\"]} _({step[\"timestamp\"]})_')
+              except Exception as e:
+                  print(f'⚠️ Could not parse report details: {e}')
+              "
+            else
+              echo "⚠️ No \`e2e-report.yaml\` found in artifacts."
+            fi
+          } >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-results-${{ github.event.client_payload.artifact_name }}
+          path: test-artifacts/
+          retention-days: 30
+
+      - name: Final Result Logic
+        run: |
+          if [ "${{ github.event.client_payload.success }}" != "true" ]; then
+            echo "::error title=External Test Failure::The external test suite reported a failure status."
+            exit 1
+          fi
