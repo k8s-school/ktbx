@@ -14,7 +14,6 @@ jobs:
       - name: Extract and Decode Artifacts
         run: |
           echo "📦 Extracting artifacts from payload..."
-          # Decodes all files provided in the artifacts payload in one pass
           echo '${{ toJson(github.event.client_payload.artifacts) }}' | jq -r 'to_entries[] | "\(.key) \(.value.content)"' | while read -r filename content; do
             if [ "$content" != "null" ]; then
               echo "$content" | base64 -d > "test-artifacts/$filename"
@@ -25,10 +24,15 @@ jobs:
       - name: Generate Summary Report
         if: always()
         run: |
-          # Define status variables
+          # Status variables
           SUCCESS="${{ github.event.client_payload.success }}"
-          [ "$SUCCESS" == "true" ] && EMOJI="✅" || EMOJI="❌"
-          [ "$SUCCESS" == "true" ] && STATUS="SUCCESS" || STATUS="FAILURE"
+          if [ "$SUCCESS" == "true" ]; then
+            EMOJI="✅"
+            STATUS="SUCCESS"
+          else
+            EMOJI="❌"
+            STATUS="FAILURE"
+          fi
 
           {
             echo "## $EMOJI External Test Results: $STATUS"
@@ -46,22 +50,22 @@ jobs:
             REPORT="test-artifacts/e2e-report.yaml"
             if [ -f "$REPORT" ]; then
               echo "### 📊 Test Metrics"
-              # Using built-in Python for robust parsing
-              python3 -c "
-              import yaml
-              try:
-                  with open('$REPORT', 'r') as f:
-                      data = yaml.safe_load(f)
-                      s = data.get('summary', {})
-                      print(f'- **Overall Status**: {s.get(\"overall_status\", \"N/A\")}')
-                      print(f'- **Success Rate**: {s.get(\"success_rate\", \"N/A\")}')
-                      print(f'- **Duration**: {s.get(\"duration_seconds\", 0)}s')
-                      print('\n#### 📋 Detailed Steps')
-                      for step in data.get('steps', []):
-                          print(f'- **{step[\"phase\"]}**: {step[\"status\"]} _({step[\"timestamp\"]})_')
-              except Exception as e:
-                  print(f'⚠️ Could not parse report details: {e}')
-              "
+              # Heredoc avoids the IndentationError caused by YAML/Shell spacing
+              python3 << 'EOF'
+import yaml
+try:
+    with open('test-artifacts/e2e-report.yaml', 'r') as f:
+        data = yaml.safe_load(f)
+        s = data.get('summary', {})
+        print(f'- **Overall Status**: {s.get("overall_status", "N/A")}')
+        print(f'- **Success Rate**: {s.get("success_rate", "N/A")}')
+        print(f'- **Duration**: {s.get("duration_seconds", 0)}s')
+        print('\n#### 📋 Detailed Steps')
+        for step in data.get('steps', []):
+            print(f'- **{step["phase"]}**: {step["status"]} _({step["timestamp"]})_')
+except Exception as e:
+    print(f'⚠️ Could not parse report details: {e}')
+EOF
             else
               echo "⚠️ No \`e2e-report.yaml\` found in artifacts."
             fi
