@@ -2,7 +2,7 @@ name: "Home-CI External Test Results Processing"
 
 on:
   repository_dispatch:
-    types: [dispatch-with-artifacts, test-dispatch-with-artifacts]
+    types: [dispatch-with-artifacts]
 
 jobs:
   process-test-results:
