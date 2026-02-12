@@ -39,7 +39,7 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
       - name: Install home-ci-reporter
         run: |
-          go install github.com/k8s-school/home-ci-reporter@latest
+          go install github.com/k8s-school/home-ci-reporter@v0.0.2-rc0
       - name: Parse E2E Report
         if: always()
         run: |
