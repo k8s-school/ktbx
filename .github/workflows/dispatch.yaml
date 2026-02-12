@@ -40,34 +40,19 @@ jobs:
             echo "| **Artifact Name** | ${{ github.event.client_payload.artifact_name }} |"
           } >> $GITHUB_STEP_SUMMARY
 
+      - name: Install home-ci-reporter
+        run: |
+          go install github.com/k8s-school/home-ci-reporter@latest
+
       - name: Parse E2E Report
         if: always()
-        shell: python
         run: |
-          import yaml
-          import os
-
-          report_path = "test-artifacts/e2e-report.yaml"
-          summary_path = os.environ['GITHUB_STEP_SUMMARY']
-
-          if os.path.exists(report_path):
-              with open(summary_path, "a") as summary:
-                  summary.write("### 📊 Test Metrics\n")
-                  try:
-                      with open(report_path, "r") as f:
-                          data = yaml.safe_load(f)
-                          s = data.get("summary", {})
-                          summary.write(f"- **Overall Status**: {s.get('overall_status', 'N/A')}\n")
-                          summary.write(f"- **Success Rate**: {s.get('success_rate', 'N/A')}\n")
-                          summary.write(f"- **Duration**: {s.get('duration_seconds', 0)}s\n")
-                          summary.write("\n#### 📋 Detailed Steps\n")
-                          for step in data.get("steps", []):
-                              summary.write(f"- **{step['phase']}**: {step['status']} _({step['timestamp']})_\n")
-                  except Exception as e:
-                      summary.write(f"⚠️ Error parsing report: {e}\n")
-          else:
-              with open(summary_path, "a") as summary:
-                  summary.write("⚠️ No `e2e-report.yaml` found.\n")
+          report_path="test-artifacts/e2e-report.yaml"
+          if [ -f "$report_path" ]; then
+            home-ci-reporter parse "$report_path"
+          else
+            echo "⚠️ No \`e2e-report.yaml\` found." >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload Artifacts
         if: always()
