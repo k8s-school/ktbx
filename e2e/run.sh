@@ -7,6 +7,14 @@ DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
+# FIXME: This fails home-ci dispatch
+# ERROR!!:
+
+CIUX_VERSION="v0.0.7-rc2"
+go install github.com/k8s-school/ciux@"$CIUX_VERSION"
+
+ciux ignite -l e2e $DIR/..
+
 # Test report file (YAML format for better GHA integration)
 # Check that HOME_CI_RESULT_FILE is set
 HOME_CI_RESULT_FILE="${HOME_CI_RESULT_FILE:-}"
@@ -20,38 +28,19 @@ fi
 # Create log directory if it doesn't exist
 mkdir -p "$(dirname "$TEST_REPORT")"
 
-# Function to log test step (store in variable for later)
+# Function to log test step
 log_step() {
     local phase="$1"
     local status="$2"
     local message="$3"
     local timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
-    step="  - phase: $phase
-    status: $status
-    message: \"$message\"
-    timestamp: $timestamp
-"
     echo "[$timestamp] $phase: $status - $message"
-    cat >> "$TEST_REPORT" <<EOF
-$step
-EOF
+    home-ci-reporter step "$phase" "$status" "$message" --file "$TEST_REPORT"
 }
 
 # Initialize YAML report
-cat > "$TEST_REPORT" <<EOF
-# KTBX E2E Test Report
-test_run:
-  start_time: $START_TIME
-  runner: $(hostname)
-
-environment:
-  os: $(uname -s)
-  arch: $(uname -m)
-  shell: $0
-
-steps:
-EOF
+home-ci-reporter init "$TEST_REPORT" "ktbx"
 
 echo "=== KTBX E2E Test Suite ==="
 echo "Start time: $START_TIME"
@@ -91,9 +80,10 @@ else
 fi
 
 # Phase 3: Create cluster
+CLUSTER_NAME=$(ciux get clustername "$DIR/..")
 echo "Phase 3: Creating Kind cluster..."
-if ktbx create --single -n ktbx; then
-    log_step "cluster_create" "passed" "Kind cluster 'ktbx' created successfully"
+if ktbx create --single -n "$CLUSTER_NAME"; then
+    log_step "cluster_create" "passed" "Kind cluster '$CLUSTER_NAME' created successfully"
     echo "✅ Cluster creation successful"
 else
     log_step "cluster_create" "failed" "Failed to create Kind cluster"
@@ -125,21 +115,12 @@ else
     exit 1
 fi
 
-# Final summary - write all steps and remaining sections
+# Finalize the report
+home-ci-reporter finalize --file "$TEST_REPORT"
+
+# Get final stats for display
 END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 TOTAL_DURATION=$(( $(date -d "$END_TIME" +%s) - $(date -d "$START_TIME" +%s) ))
-
-# Append all steps to the YAML file
-cat >> "$TEST_REPORT" <<EOF
-summary:
-  end_time: $END_TIME
-  duration_seconds: $TOTAL_DURATION
-  total_steps: 5
-  passed_steps: 5
-  failed_steps: 0
-  overall_status: passed
-  success_rate: 100%
-EOF
 
 echo "=========================="
 echo "🎉 ALL TESTS PASSED!"

@@ -1,3 +1,6 @@
 apiVersion: v1alpha1
 registry: k8sschool
-
+dependencies:
+  - package: github.com/k8s-school/home-ci-reporter@v0.0.1
+    labels:
+      e2e: "true"
