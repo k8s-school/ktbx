@@ -1,51 +1,52 @@
 #!/bin/bash
 
-# Install Helm on the client machine
-
+# Install Kind on the client machine
 # @author Fabrice Jammes
-#!/bin/bash
 
+set -euo pipefail
 
-set -euxo pipefail
-
-DIR=$(cd "$(dirname "$0")"; pwd -P)
-
-KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
-
+# Configuration
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin}"
 KIND_BIN="$KTBX_INSTALL_DIR/kind"
 KIND_VERSION="{{ .KindVersion }}"
 
-if [ -w "$KTBX_INSTALL_DIR" ]; then
-    SUDO_CMD=""
-else
-    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
-      SUDO_CMD="sudo"
+# Handle privilege escalation if directory is not writable
+SUDO_CMD=""
+if [[ ! -w "$KTBX_INSTALL_DIR" ]]; then
+    if command -v sudo >/dev/null 2>&1; then
+        SUDO_CMD="sudo"
     else
-      echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is unavailable or restricted."
-      exit 1
+        echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is missing." >&2
+        exit 1
     fi
 fi
 
-# If kind exists, compare current version to desired one
-if [ -e $KIND_BIN ]; then
-  current_version="v$(kind version -q)"
-else
-  current_version=""
+# Check if the desired version is already installed
+if [[ -x "$KIND_BIN" ]]; then
+    CURRENT_VERSION="v$("$KIND_BIN" version -q)"
+    if [[ "$CURRENT_VERSION" == "$KIND_VERSION" ]]; then
+        echo "INFO: kind $KIND_VERSION is already installed"
+        exit 0
+    fi
 fi
 
-if [ "$current_version" == "$KIND_VERSION" ]; then
-  echo "WARN: kind $KIND_VERSION is already installed"
-else
-  OS="$(uname -s)"
-  test "$OS" = "Linux" && OS="linux"
+# Detect Operating System and Architecture
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)  ARCH="amd64" ;;
+    aarch64) ARCH="arm64" ;;
+    armv7l)  ARCH="arm"   ;;
+esac
 
-  ARCH="$(uname -m)"
-  test "$ARCH" = "aarch64" && ARCH="arm64"
-  test "$ARCH" = "x86_64" && ARCH="amd64"
+# Create temporary directory and ensure cleanup on exit
+TMP_DIR=$(mktemp -d -t kind-install.XXXXXX)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-  tmp_dir=$(mktemp -d --suffix "-ktbx-kind")
-  curl -Lo "$tmp_dir/kind" https://github.com/kubernetes-sigs/kind/releases/download/"$KIND_VERSION"/kind-$OS-$ARCH
-  $SUDO_CMD install -m 555 "$tmp_dir/kind" "$KIND_BIN"
-  rm -r "$tmp_dir"
-fi
+# Download and install the binary
+echo "Downloading kind $KIND_VERSION for $OS/$ARCH..."
+curl -Lo "$TMP_DIR/kind" "https://github.com/kubernetes-sigs/kind/releases/download/$KIND_VERSION/kind-$OS-$ARCH"
 
+$SUDO_CMD install -m 0755 "$TMP_DIR/kind" "$KIND_BIN"
+
+echo "Successfully installed kind $KIND_VERSION in $KTBX_INSTALL_DIR"

@@ -1,30 +1,53 @@
 #!/bin/bash
 
 # Install Helm on the client machine
-
 # @author Fabrice Jammes
-#!/bin/bash
 
-set -euxo pipefail
+set -euo pipefail
 
-KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin/}"
+# Configuration
+KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin}"
+HELM_BIN="$KTBX_INSTALL_DIR/helm"
+HELM_VERSION="3.16.2"
 
-helm_bin="$KTBX_INSTALL_DIR/helm"
-helm_version="3.16.2"
+# Detect Operating System and Architecture
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64)  ARCH="amd64" ;;
+    aarch64) ARCH="arm64" ;;
+    armv7l)  ARCH="arm"   ;;
+esac
 
-# If helm exists, compare current version to desired one
-if [ -e $helm_bin ]; then
-  current_version=$(helm version --short)
-else
-  current_version=""
+# Handle privilege escalation if directory is not writable
+SUDO_CMD=""
+if [[ ! -w "$KTBX_INSTALL_DIR" ]]; then
+    if command -v sudo >/dev/null 2>&1; then
+        SUDO_CMD="sudo"
+    else
+        echo "ERROR: No write access to $KTBX_INSTALL_DIR and sudo is missing." >&2
+        exit 1
+    fi
 fi
 
-if  [[ $current_version =~ "$helm_version" ]]; then
-  echo "WARN: helm $helm_version is already installed"
-else
-  tmp_dir=$(mktemp -d --suffix "-ktbx-helm")
-  curl -o "$tmp_dir"/helm.tgz https://get.helm.sh/helm-v${helm_version}-linux-amd64.tar.gz
-  tar -C "$tmp_dir" -zxvf "$tmp_dir"/helm.tgz
-  sudo install -m 555 "$tmp_dir"/linux-amd64/helm "$helm_bin"
-  rm -r "$tmp_dir"
+# Check if the desired version is already installed
+if [[ -x "$HELM_BIN" ]]; then
+    CURRENT_VERSION=$(helm version --short | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+')
+    if [[ "$CURRENT_VERSION" == "v$HELM_VERSION" ]]; then
+        echo "INFO: helm v$HELM_VERSION is already installed"
+        exit 0
+    fi
 fi
+
+# Create temporary directory and ensure cleanup on exit
+TMP_DIR=$(mktemp -d -t helm-install.XXXXXX)
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+# Download and install the binary
+echo "Downloading helm v$HELM_VERSION for $OS/$ARCH..."
+curl -o "$TMP_DIR/helm.tgz" "https://get.helm.sh/helm-v$HELM_VERSION-$OS-$ARCH.tar.gz"
+tar -C "$TMP_DIR" -zxf "$TMP_DIR/helm.tgz"
+
+$SUDO_CMD install -m 0755 "$TMP_DIR/$OS-$ARCH/helm" "$HELM_BIN"
+
+echo "Successfully installed helm v$HELM_VERSION in $KTBX_INSTALL_DIR"

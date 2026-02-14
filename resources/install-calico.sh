@@ -4,9 +4,9 @@
 
 # @author Fabrice Jammes
 
-set -euxo pipefail
+set -euo pipefail
 
-# Install calico cni plugin
+# Configuration
 CALICO_VERSION="v3.28.2"
 
 kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/$CALICO_VERSION/manifests/tigera-operator.yaml
