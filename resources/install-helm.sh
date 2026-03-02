@@ -3,7 +3,7 @@
 # Install Helm on the client machine
 # @author Fabrice Jammes
 
-set -euo pipefail
+set -euxo pipefail
 
 # Configuration
 KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin}"
