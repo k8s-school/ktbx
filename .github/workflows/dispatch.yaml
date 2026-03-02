@@ -20,12 +20,10 @@ jobs:
           echo '${{ toJson(github.event.client_payload) }}' > payload.json
           home-ci-reporter extract payload.json test-artifacts
       - name: Generate Summary Metadata
-        if: always()
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
           home-ci-reporter summary payload.json
       - name: Parse E2E Report
-        if: always()
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
           report_path="test-artifacts/e2e-report.yaml"
@@ -36,13 +34,11 @@ jobs:
             exit 1
           fi
       - name: Upload Artifacts
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: external-results-${{ github.event.client_payload.artifact_name }}
           path: test-artifacts/
           retention-days: 30
-
       - name: Final Result Logic
         run: |
           if [ "${{ github.event.client_payload.success }}" != "true" ]; then
