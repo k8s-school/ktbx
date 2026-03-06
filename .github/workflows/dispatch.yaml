@@ -18,7 +18,13 @@ jobs:
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
           echo '${{ toJson(github.event.client_payload) }}' > payload.json
+          echo "=== Payload content ==="
+          cat payload.json
+          echo "======================="
           home-ci-reporter extract payload.json test-artifacts
+          echo "=== Files extracted ==="
+          find test-artifacts -type f -ls
+          echo "======================="
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -28,17 +34,23 @@ jobs:
       - name: Generate Summary Metadata
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
-          home-ci-reporter summary payload.json
+          home-ci-reporter summary payload.json -vvv
       - name: Parse E2E Report
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
           report_path="test-artifacts/e2e-report.yaml"
+          echo "=== Contents of test-artifacts ==="
+          ls -la test-artifacts/ || echo "test-artifacts directory does not exist"
+          echo "=== Searching for any YAML files ==="
+          find test-artifacts -name "*.yaml" -o -name "*.yml" 2>/dev/null || echo "No YAML files found"
+          echo "=================================="
           if [ -f "$report_path" ]; then
-            home-ci-reporter parse "$report_path"
+            home-ci-reporter parse "$report_path" -vvv
           else
             echo "⚠️ No \`e2e-report.yaml\` found." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
+          echo "DEBUG: Summary metadata generated. $GITHUB_STEP_SUMMARY"
       - name: Final Result Logic
         run: |
           if [ "${{ github.event.client_payload.success }}" != "true" ]; then
