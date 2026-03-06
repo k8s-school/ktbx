@@ -69,6 +69,9 @@ else
     echo "❌ Kind installation failed"
     exit 1
 fi
+    
+echo "❌ Fake error"
+exit 1
 
 if ktbx install kubectl; then
     log_step "kubectl_install" "passed" "Kubectl installed successfully"
