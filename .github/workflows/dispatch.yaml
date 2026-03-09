@@ -10,10 +10,13 @@ jobs:
     steps:
       - name: Initialize
         run: mkdir -p test-artifacts
-
-      - name: Install home-ci-reporter
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install home-ci-reporter with ciux
         run: |
-          go install github.com/k8s-school/home-ci-reporter@v0.0.2-rc7
+          CIUX_VERSION="v0.0.7-rc2"
+          go install github.com/k8s-school/ciux@"$CIUX_VERSION"
+          ciux ignite -l gha_dispatch .
       - name: Extract and Decode Artifacts
         run: |
           PATH=$(go env GOPATH)/bin:$PATH
