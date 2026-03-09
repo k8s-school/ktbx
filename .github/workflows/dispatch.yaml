@@ -13,6 +13,8 @@ jobs:
           go-version: '^1.24.3'
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Install home-ci-reporter with ciux
         run: |
           CIUX_VERSION="v0.0.7-rc2"
