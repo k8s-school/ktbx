@@ -39,6 +39,10 @@ log_step() {
     home-ci-reporter step "$phase" "$status" "$message" --file "$TEST_REPORT"
 }
 
+echo "❌ Fake error: no yaml"
+exit 1
+
+
 # Initialize YAML report
 home-ci-reporter init "$TEST_REPORT" "ktbx"
 
@@ -70,9 +74,6 @@ else
     exit 1
 fi
     
-echo "❌ Fake error"
-exit 1
-
 if ktbx install kubectl; then
     log_step "kubectl_install" "passed" "Kubectl installed successfully"
     echo "✅ Kubectl installation successful"
