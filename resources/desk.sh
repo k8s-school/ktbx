@@ -37,7 +37,7 @@ MOUNTS="$MOUNTS --volume /etc/group:/etc/group:ro -v /etc/passwd:/etc/passwd:ro"
 MOUNTS="$MOUNTS --volume /usr/local/share/ca-certificates:/usr/local/share/ca-certificates"
 
 # Optional binaries that are not built inside the image
-for binary in oc kind cosign trivy docker; do
+for binary in cosign docker ip oc oc-mirror skopeo kind trivy; do
     bin_path=$(which $binary) || bin_path=""
     if [ -n "$bin_path" ]; then
         MOUNTS="$MOUNTS --volume $bin_path:/usr/local/bin/$binary"
@@ -57,6 +57,7 @@ if [ "$SHOWDOCKERCMD" = true ]; then
     echo "docker run -it --net=host \
 $MOUNTS $DOCKER_GROUP_ADD --rm \
 --user=$(id -u):$(id -g $USER) \
+-e USER=$USER \
 -w $HOME -- \
 \"$IMAGE\""
 else
@@ -67,6 +68,7 @@ else
     docker run -it --net=host \
         $MOUNTS $DOCKER_GROUP_ADD --rm \
         --user=$(id -u):$(id -g $USER) \
+        -e USER=$USER \
         -w $HOME -- \
         "$IMAGE" $CMD
 fi
