@@ -23,7 +23,7 @@ Support `kind-v0.31.0` and `k8s-v1.25+`
 ## Run kind on a workstation, in two lines of code
 
 ```shell
-go install github.com/k8s-school/ktbx@v1.1.6
+go install github.com/k8s-school/ktbx@v1.1.7
 
 # Install kind
 ktbx install kind
