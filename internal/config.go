@@ -27,8 +27,11 @@ type KtbxConfig struct {
 	ExtraMountPath  string `mapstructure:"extraMountPath" default:""`
 	LocalCertSANs   bool   `mapstructure:"localCertSans" default:"false"`
 	PrivateRegistry string `mapstructure:"privateRegistry" default:""`
-	Cni             string `mapstructure:"cni" default:""`
-	Workers         uint   `mapstructure:"workers" default:"3"`
+	// Host directory of containerd hosts.toml files (one sub-directory per
+	// registry, e.g. docker.io/hosts.toml), mounted on every node
+	RegistryConfigDir string `mapstructure:"registryConfigDir" default:""`
+	Cni               string `mapstructure:"cni" default:""`
+	Workers           uint   `mapstructure:"workers" default:"3"`
 }
 
 func LogConfiguration() {
@@ -84,6 +87,13 @@ func GetConfig() (KtbxConfig, error) {
 	if err != nil {
 		slog.Error("unable to unmarshal ktbx configuration", "error", err)
 		return *c, err
+	}
+
+	// containerd ignores registry.configs once config_path is set: use
+	// skip_verify in the registry's hosts.toml instead
+	if c.PrivateRegistry != "" && c.RegistryConfigDir != "" {
+		slog.Error("privateRegistry and registryConfigDir are mutually exclusive")
+		return *c, errors.New("privateRegistry and registryConfigDir are mutually exclusive")
 	}
 
 	if viper.GetBool("single") {

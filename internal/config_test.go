@@ -128,3 +128,38 @@ func TestGenerateKindConfigFile(t *testing.T) {
 	require.NoError(err)
 	require.Equal(string(expectedContents), string(fileContents))
 }
+
+func TestGenerateKindConfigFileRegistryConfigDir(t *testing.T) {
+	require := require.New(t)
+
+	config := KtbxConfig{
+		Workers:           1,
+		RegistryConfigDir: "/etc/ktbx/certs.d",
+	}
+
+	kindConfigFile, err := GenerateKindConfigFile(config)
+	require.NoError(err)
+	defer os.RemoveAll(filepath.Dir(kindConfigFile))
+
+	fileContents, err := os.ReadFile(kindConfigFile)
+	require.NoError(err)
+
+	wd, err := os.Getwd()
+	require.NoError(err)
+	expectedKindConfigFile := filepath.Join(filepath.Dir(wd), "utest", "kind-config-registry.yaml")
+
+	expectedContents, err := os.ReadFile(expectedKindConfigFile)
+	require.NoError(err)
+	require.Equal(string(expectedContents), string(fileContents))
+}
+
+func TestGetConfigRegistryConflict(t *testing.T) {
+	require := require.New(t)
+	defer viper.Reset()
+
+	viper.Set("kind.privateRegistry", "docker-registry.docker-registry:5000")
+	viper.Set("kind.registryConfigDir", "/etc/ktbx/certs.d")
+
+	_, err := GetConfig()
+	require.Error(err)
+}

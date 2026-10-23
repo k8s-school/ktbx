@@ -1,5 +1,11 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
+{{- if .RegistryConfigDir }}
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry]
+    config_path = "/etc/containerd/certs.d"
+{{- end }}
 {{- if .PrivateRegistry }}
 containerdConfigPatches:
 - |-
@@ -44,7 +50,7 @@ nodes:
       certSANs:
         - "127.0.0.1"
 	{{- end }}
-  {{- if or .ExtraMountPath .AuditPolicy }}
+  {{- if or .ExtraMountPath .AuditPolicy .RegistryConfigDir }}
   extraMounts:
   {{- if .ExtraMountPath }}
   - hostPath: {{ .ExtraMountPath }}
@@ -55,12 +61,24 @@ nodes:
     containerPath: /etc/kubernetes/policies/audit-policy.yaml
     readOnly: true
   {{- end }}
+  {{- if .RegistryConfigDir }}
+  - hostPath: {{ .RegistryConfigDir }}
+    containerPath: /etc/containerd/certs.d
+    readOnly: true
+  {{- end }}
   {{- end }}
 {{- range $val := Iterate .Workers }}
 - role: worker
-  {{- if $.ExtraMountPath }}
+  {{- if or $.ExtraMountPath $.RegistryConfigDir }}
   extraMounts:
+  {{- if $.ExtraMountPath }}
   - hostPath: {{ $.ExtraMountPath }}
     containerPath: /mnt/extra
+  {{- end }}
+  {{- if $.RegistryConfigDir }}
+  - hostPath: {{ $.RegistryConfigDir }}
+    containerPath: /etc/containerd/certs.d
+    readOnly: true
+  {{- end }}
   {{- end }}
 {{- end }}

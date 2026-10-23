@@ -16,3 +16,8 @@ kind:
 
   # Use an private registry with insecure_skip_verify tls mode
   privateRegistry: "docker-registry.docker-registry:5000"
+
+  # Host directory of containerd hosts.toml files, mounted on every node as
+  # /etc/containerd/certs.d (e.g. docker.io/hosts.toml to use a registry mirror).
+  # Mutually exclusive with privateRegistry: use skip_verify in hosts.toml instead
+  # registryConfigDir: /etc/ktbx/certs.d

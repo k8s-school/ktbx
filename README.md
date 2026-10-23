@@ -6,6 +6,7 @@ Helper to install Kubernetes clusters, based on [kind], on any Linux system. All
 - mono or multi-nodes development clusters
 - use of Calico CNI
 - use of an insecure private registry
+- use of registry mirrors (containerd hosts.toml, `registryConfigDir`)
 
 Can be used for runners launched by a  CI/CD platform, including [Github Action](https://github.com/k8s-school/k8s-toolbox/actions?query=workflow%3A"CI")
 
