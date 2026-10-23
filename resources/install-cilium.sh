@@ -32,31 +32,34 @@ if [[ ! -w "$KTBX_INSTALL_DIR" ]]; then
     fi
 fi
 
-# Check if the desired version is already installed
+# Install the Cilium CLI only if the desired version is not already present.
+# NOTE: this only caches the CLI binary download; the CNI installation below
+# must always run, otherwise a freshly created cluster is left without a CNI.
+CURRENT_VERSION=""
 if [[ -x "$CILIUM_BIN" ]]; then
     CURRENT_VERSION=$("$CILIUM_BIN" version --client 2>/dev/null | grep "cilium-cli" | awk '{print $2}' || echo "unknown")
-    if [[ "$CURRENT_VERSION" == "$CILIUM_CLI_VERSION" ]]; then
-        echo "INFO: cilium CLI $CILIUM_CLI_VERSION is already installed"
-        exit 0
-    fi
 fi
 
-# Create temporary directory and ensure cleanup on exit
-TMP_DIR=$(mktemp -d -t cilium-install.XXXXXX)
-trap 'rm -rf "$TMP_DIR"' EXIT
+if [[ "$CURRENT_VERSION" == "$CILIUM_CLI_VERSION" ]]; then
+    echo "INFO: cilium CLI $CILIUM_CLI_VERSION is already installed"
+else
+    # Create temporary directory and ensure cleanup on exit
+    TMP_DIR=$(mktemp -d -t cilium-install.XXXXXX)
+    trap 'rm -rf "$TMP_DIR"' EXIT
 
-# Download and install the Cilium CLI
-echo "Downloading cilium CLI $CILIUM_CLI_VERSION for $OS/$ARCH..."
-curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz" -o "$TMP_DIR/cilium.tar.gz"
-curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz.sha256sum" -o "$TMP_DIR/cilium.tar.gz.sha256sum"
-cd "$TMP_DIR" && sha256sum --check cilium.tar.gz.sha256sum
-tar -xzf "$TMP_DIR/cilium.tar.gz" -C "$TMP_DIR"
+    # Download and install the Cilium CLI
+    echo "Downloading cilium CLI $CILIUM_CLI_VERSION for $OS/$ARCH..."
+    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz" -o "$TMP_DIR/cilium.tar.gz"
+    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz.sha256sum" -o "$TMP_DIR/cilium.tar.gz.sha256sum"
+    cd "$TMP_DIR" && sha256sum --check cilium.tar.gz.sha256sum
+    tar -xzf "$TMP_DIR/cilium.tar.gz" -C "$TMP_DIR"
 
-$SUDO_CMD install -m 0755 "$TMP_DIR/cilium" "$CILIUM_BIN"
+    $SUDO_CMD install -m 0755 "$TMP_DIR/cilium" "$CILIUM_BIN"
 
-echo "Successfully installed cilium CLI $CILIUM_CLI_VERSION in $KTBX_INSTALL_DIR"
+    echo "Successfully installed cilium CLI $CILIUM_CLI_VERSION in $KTBX_INSTALL_DIR"
+fi
 
-# Install cilium
+# Install cilium CNI into the cluster (always run, even when the CLI was cached)
 cilium install --version ${CILIUM_VERSION}
 
 echo "Wait for cilium daemonset to be ready"
