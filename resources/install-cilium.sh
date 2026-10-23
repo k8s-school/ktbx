@@ -9,7 +9,7 @@ set -euo pipefail
 # Configuration
 KTBX_INSTALL_DIR="${KTBX_INSTALL_DIR:-/usr/local/bin}"
 CILIUM_CLI_VERSION="v0.18.6"
-CILIUM_VERSION="1.18.0"
+CILIUM_VERSION="1.18.15"
 CILIUM_BIN="$KTBX_INSTALL_DIR/cilium"
 
 # Detect Operating System and Architecture
