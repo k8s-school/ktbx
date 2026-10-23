@@ -49,10 +49,12 @@ else
 
     # Download and install the Cilium CLI
     echo "Downloading cilium CLI $CILIUM_CLI_VERSION for $OS/$ARCH..."
-    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz" -o "$TMP_DIR/cilium.tar.gz"
-    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/cilium-$OS-$ARCH.tar.gz.sha256sum" -o "$TMP_DIR/cilium.tar.gz.sha256sum"
-    cd "$TMP_DIR" && sha256sum --check cilium.tar.gz.sha256sum
-    tar -xzf "$TMP_DIR/cilium.tar.gz" -C "$TMP_DIR"
+    # Keep the upstream file name: the .sha256sum file refers to it
+    TARBALL="cilium-$OS-$ARCH.tar.gz"
+    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/$TARBALL" -o "$TMP_DIR/$TARBALL"
+    curl -L --fail "https://github.com/cilium/cilium-cli/releases/download/$CILIUM_CLI_VERSION/$TARBALL.sha256sum" -o "$TMP_DIR/$TARBALL.sha256sum"
+    (cd "$TMP_DIR" && sha256sum --check "$TARBALL.sha256sum")
+    tar -xzf "$TMP_DIR/$TARBALL" -C "$TMP_DIR"
 
     $SUDO_CMD install -m 0755 "$TMP_DIR/cilium" "$CILIUM_BIN"
 
